@@ -1,0 +1,5 @@
+name: TurtleServer
+main: de.petropia.turtleServer.TurtleServer
+author: Professor_Sam
+version: ${project.version}
+api-version: 1.19
