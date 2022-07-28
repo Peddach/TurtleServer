@@ -22,8 +22,8 @@ public class MessageSender {
     public MessageSender(@NotNull PetropiaPlugin plugin) {
         String pluginName = plugin.getDescription().getName();
         this.prefix = Component.text("[").color(NamedTextColor.GRAY)
-                .append(Component.text(pluginName)).color(NamedTextColor.GOLD)
-                .append(Component.text("] ")).color(NamedTextColor.GRAY);
+                .append(Component.text(pluginName).color(NamedTextColor.GOLD))
+                .append(Component.text("] ").color(NamedTextColor.GRAY));
     }
 
     /**
@@ -63,7 +63,7 @@ public class MessageSender {
         }
         List<Player> players = new ArrayList<>();
         Bukkit.getServer().getOnlinePlayers().forEach(p -> {
-            if(!p.hasPermission("TurtleServer.debug")){
+            if (!p.hasPermission("TurtleServer.debug")) {
                 return;
             }
             players.add(p);
