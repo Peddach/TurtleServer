@@ -23,12 +23,19 @@ public class PrefixManager {
 
     private static PrefixManager instance;
 
+    /**
+     * The PrefixManager ist for managing chat and tab prefixes on every server. By default, every prefix is loaded in the MiniMessage format from Luckperms
+     */
     public PrefixManager(){
         instance = this;
         loadGroups();
     }
 
+    /**
+     * (Re-)Load all groups from luckperms and set default prefix for every player
+     */
     private void loadGroups(){
+        prefixGroups.clear();
         for(Group group : luckPerms.getGroupManager().getLoadedGroups()) {
             String minimessagePrefix = group.getCachedData().getMetaData().getPrefix();
             if(minimessagePrefix == null){
@@ -46,7 +53,11 @@ public class PrefixManager {
         }
     }
 
-    public void setDefaultPrefix(Player player){
+    /**
+     * (Re-)set the default prefix from Luckperms
+     * @param player Player to set prefix
+     */
+    public void setDefaultPrefix(Player player) {
         removePlayerFromAllTeams(player);
         PrefixGroup prefixGroup = getPrefixGroup(player);
         Team team = prefixGroup.getTeam();
@@ -57,6 +68,11 @@ public class PrefixManager {
         player.playerListName(prefixGroup.getPrefix().append(player.name().color(NamedTextColor.WHITE)));
     }
 
+    /**
+     * Get the {@link PrefixGroup} for the corrosponding player
+     * @param player Playe to get the group for
+     * @return PrefixGroup of the player
+     */
     public PrefixGroup getPrefixGroup(Player player){
         for(PrefixGroup prefixGroup : prefixGroups){
             if (!luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup().equals(prefixGroup.getName())){
@@ -67,6 +83,11 @@ public class PrefixManager {
        return null;
     }
 
+    /**
+     * Remove a player from all teams and effectively reset the prefix
+     * @param player Player to remove
+     */
+
     public void removePlayerFromAllTeams(Player player) {
         for (Team team : this.scoreboard.getTeams()) {
             if (!team.getEntries().contains(player.getName())) {
@@ -74,8 +95,15 @@ public class PrefixManager {
             }
             team.removePlayer(player);
         }
+        player.displayName(player.name());
+        player.playerListName(player.name());
     }
 
+    /**
+     * This is necassary because Bukkit sorts the tablist alphabetic so every team's name is representing their weight
+     * @param weight Weight of the group as int
+     * @return Represenentation of the weigt as string
+     */
     private String weightAsCharacters(int weight) {
         String[] abc = { "j", "i", "h", "g", "f", "e", "d", "c", "b", "a" };
         String[] input = String.valueOf(weight).split("");

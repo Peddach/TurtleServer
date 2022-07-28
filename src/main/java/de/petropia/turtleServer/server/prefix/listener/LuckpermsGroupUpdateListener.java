@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 
 public class LuckpermsGroupUpdateListener {
 
+    /**
+     * Recalculate the {@link de.petropia.turtleServer.server.prefix.PrefixGroup} when a players rank updates
+     * @param event {@link UserDataRecalculateEvent}
+     */
     public void onGroupUpdate(UserDataRecalculateEvent event) {
         Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
             Player player = Bukkit.getPlayer(event.getUser().getUniqueId());

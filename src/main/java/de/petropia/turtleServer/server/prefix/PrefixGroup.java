@@ -10,6 +10,12 @@ public class PrefixGroup {
     private final Team team;
     private final String name;
 
+    /**
+     * Representation of a LuckpermsGroup but simplefied
+     * @param name Name of the group
+     * @param prefix The chat and tabprefix
+     * @param weight weight as string
+     */
     public PrefixGroup(String name, Component prefix, String weight){
         this.prefix = prefix;
         this.weight = weight;
@@ -18,18 +24,30 @@ public class PrefixGroup {
         this.team.displayName(prefix);
     }
 
+    /**
+     * @return chat and tab prefix of the group
+     */
     public Component getPrefix() {
         return prefix;
     }
 
+    /**
+     * @return Weight as string alphabetic representation
+     */
     public String getWeight() {
         return weight;
     }
 
+    /**
+     * @return Scoreboard team of group
+     */
     public Team getTeam() {
         return team;
     }
 
+    /**
+     * @return Name of the group in LuckPerms
+     */
     public String getName() {
         return name;
     }

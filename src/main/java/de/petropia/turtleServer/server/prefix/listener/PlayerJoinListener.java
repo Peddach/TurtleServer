@@ -7,6 +7,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinListener implements Listener {
 
+    /**
+     * Set players default prefix from LuckPerms on join
+     * @param event {@link PlayerJoinListener}
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         PrefixManager.getInstance().setDefaultPrefix(event.getPlayer());
