@@ -2,6 +2,7 @@ package de.petropia.turtleServer.server.prefix;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -12,12 +13,14 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PrefixManager {
 
     private final LuckPerms luckPerms = LuckPermsProvider.get();
     private final List<PrefixGroup> prefixGroups = new ArrayList<>();
+    private final HashMap<Player, TextColor> playerNameColorMap = new HashMap<>();
 
     private final Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -66,6 +69,8 @@ public class PrefixManager {
             onlinePlayer.setScoreboard(scoreboard);
         }
         player.playerListName(prefixGroup.getPrefix().append(player.name().color(NamedTextColor.WHITE)));
+        player.displayName(prefixGroup.getPrefix().append(player.name().color(NamedTextColor.WHITE)));
+        player.customName(prefixGroup.getPrefix().append(player.name().color(NamedTextColor.WHITE)));
     }
 
     /**
@@ -97,6 +102,42 @@ public class PrefixManager {
         }
         player.displayName(player.name());
         player.playerListName(player.name());
+        player.customName(null);
+    }
+
+    /**
+     * Set a special color for a player name
+     * @param player Player for the color
+     * @param color {@link TextColor} for the player
+     */
+    public void setPlayerNameColor(TextColor color, Player player){
+        playerNameColorMap.put(player, color);
+        PrefixGroup group = getPrefixGroup(player);
+        player.playerListName(group.getPrefix().append(player.name().color(color)));
+        player.displayName(group.getPrefix().append(player.name().color(color)));
+        player.customName(group.getPrefix().append(player.name().color(color)));
+    }
+
+    /**
+     * Get the prefix and the playername with players special color or, when color not specified, default name color
+     * @param player Player
+     * @return formatted prefix with player name
+     */
+    public Component getPlayerNameColorAndPrefix(Player player){
+        PrefixGroup group = getPrefixGroup(player);
+        if(!playerNameColorMap.containsKey(player)){
+            return group.getPrefix().append(player.name().color(NamedTextColor.WHITE));
+        }
+        return group.getPrefix().append(player.name().color(playerNameColorMap.get(player)));
+    }
+
+    /**
+     * Reset player specific name color
+     * @param player Player to reset
+     */
+    public void resetPlayerNameColor(Player player){
+        playerNameColorMap.remove(player);
+        setDefaultPrefix(player);
     }
 
     /**

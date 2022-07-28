@@ -18,7 +18,7 @@ public class AsyncChatListener implements Listener {
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         Component msg = event.message();
-        Component prefix = PrefixManager.getInstance().getPrefixGroup(player).getPrefix().append(event.getPlayer().name().color(NamedTextColor.WHITE));
+        Component prefix = PrefixManager.getInstance().getPlayerNameColorAndPrefix(player);
         Component finalMessage = prefix.append(Component.text(": ").color(NamedTextColor.GRAY).append(msg));
         event.renderer((source, sourceDisplayName, message, viewer) -> finalMessage);
     }
