@@ -1,12 +1,12 @@
 package de.petropia.turtleServer.server.user;
 
 import de.petropia.turtleServer.server.TurtleServer;
-import org.mongodb.morphia.annotations.*;
+import dev.morphia.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(value = "players", noClassnameStored = true)
+@Entity(value = "players")
 public class PetropiaPlayer {
 
     @Id
@@ -34,7 +34,7 @@ public class PetropiaPlayer {
     }
 
     /**
-     * @return The database id of this {@link PetropiaPlayer} objecz
+     * @return The database id of this {@link PetropiaPlayer} object
      */
     public int getId() {
         return id;
@@ -139,7 +139,7 @@ public class PetropiaPlayer {
 
     /**
      * Update the username. Remember to {@link PetropiaPlayer#updatePlayer()} to save changes
-     * @param userName New user name of player
+     * @param userName New username of player
      */
     public void updateUserName(String userName){
         nameHistory.add(userName);

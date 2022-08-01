@@ -1,15 +1,18 @@
 package de.petropia.turtleServer.server.user.database;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClientFactory;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
+import dev.morphia.mapping.codec.pojo.MorphiaCodec;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -18,7 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class MongoDBHandler {
     private PetropiaPlayerDAO petropiaPlayerDAO;
-    private final Hashtable<String, PetropiaPlayer> petropiaPlayerCache = new Hashtable<>();
+    private final Hashtable<String, PetropiaPlayer> petropiaPlayerUUIDCache = new Hashtable<>();
+    private final Hashtable<String, PetropiaPlayer> petropiaPlayerNameCache = new Hashtable<>();
 
     /**
      * A handler for the {@link PetropiaPlayer} to read and write to the database and cache
@@ -30,23 +34,33 @@ public class MongoDBHandler {
         String username = configuration.getString("Mongo.User");
         String database = configuration.getString("Mongo.Database");
         String password = configuration.getString("Mongo.Password");
-        if(username == null || database == null || password == null || port == 0 || hostname == null){
-            TurtleServer.getInstance().getLogger().warning("MongoDB Daten Fehler!");
+        if(password == null){
+            TurtleServer.getInstance().getLogger().warning("Missing password!");
             return;
         }
-
-        ServerAddress serverAddress = new ServerAddress(hostname, port);    //Creating server address
-        List<MongoCredential> credentials = new ArrayList<>();
-        credentials.add(MongoCredential.createCredential(username, database, password.toCharArray()));
-        MongoClient mongoClient = new MongoClient(serverAddress, credentials);
-
-        Morphia morphia = new Morphia();
-        morphia.map(PetropiaPlayer.class);
-
-        Datastore datastore = morphia.createDatastore(mongoClient, database);
+        if(username == null){
+            TurtleServer.getInstance().getLogger().warning("Missing username!");
+            return;
+        }
+        if(database == null){
+            TurtleServer.getInstance().getLogger().warning("Missing database!");
+            return;
+        }
+        if(hostname == null){
+            TurtleServer.getInstance().getLogger().warning("Missing hostname!");
+            return;
+        }
+        if(port == 0){
+            TurtleServer.getInstance().getLogger().warning("Missing port!");
+            return;
+        }
+        MongoClient mongoClient = MongoClients.create("mongodb://" + username + ":" + password + "@" + hostname + ":" + port);
+        Datastore datastore = Morphia.createDatastore(mongoClient, database);
+        datastore.getMapper().map(PetropiaPlayer.class);
         datastore.ensureIndexes();
 
         petropiaPlayerDAO = new PetropiaPlayerDAO(PetropiaPlayer.class, datastore);
+        
     }
 
     /**
@@ -58,14 +72,36 @@ public class MongoDBHandler {
     public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUUID(String uuid){
         CompletableFuture<PetropiaPlayer> playerCompletableFuture = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
-            if(petropiaPlayerCache.contains(uuid)){
-               playerCompletableFuture.complete(petropiaPlayerCache.get(uuid));
+            if(petropiaPlayerUUIDCache.contains(uuid)){
+               playerCompletableFuture.complete(petropiaPlayerUUIDCache.get(uuid));
                return;
             }
             PetropiaPlayer player = petropiaPlayerDAO.findOne("uuid", uuid);
             if(player != null){
                 playerCompletableFuture.complete(player);
-                cachePlayer(player);
+                return;
+            }
+            playerCompletableFuture.complete(null);
+        });
+        return playerCompletableFuture;
+    }
+
+    /**
+     * Read a player from the cache or, if not present, the database.
+     * @param username Mojang username of player
+     * @return A {@link CompletableFuture} which will be completed when the user is read from the database.
+     * <b>The Future can be completed with null when the player is nether cached nor in the database. This means, he never joined the server or the name has a spelling mistake (case sensetive)</b>
+     */
+    public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUsername(String username) {
+        CompletableFuture<PetropiaPlayer> playerCompletableFuture = new CompletableFuture<>();
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
+            if(petropiaPlayerNameCache.contains(username)) {
+                playerCompletableFuture.complete(petropiaPlayerNameCache.get(username));
+                return;
+            }
+            PetropiaPlayer player = petropiaPlayerDAO.findOne("userName", username);
+            if(player != null){
+                playerCompletableFuture.complete(player);
                 return;
             }
             playerCompletableFuture.complete(null);
@@ -88,7 +124,7 @@ public class MongoDBHandler {
      * @return List of cached players
      */
     public List<PetropiaPlayer> getChachedPlayers(){
-        return new ArrayList<>(petropiaPlayerCache.values());
+        return new ArrayList<>(petropiaPlayerUUIDCache.values());
     }
 
     /**
@@ -107,20 +143,25 @@ public class MongoDBHandler {
      * @param player Player to uncache
      */
     public void unCachePlayer(PetropiaPlayer player){
-       if(petropiaPlayerCache.containsValue(player)){
-           petropiaPlayerCache.remove(null, player);
+       if(petropiaPlayerUUIDCache.containsValue(player)){
+           petropiaPlayerUUIDCache.remove(null, player);
        }
+        if(petropiaPlayerNameCache.containsValue(player)){
+            petropiaPlayerNameCache.remove(null, player);
+        }
     }
 
     /**
-     * Add a player to the player cache
+     * Add a player to the player cache. Only players online on the current server should be cached
      * <b>Internal use only</b>
      * @param player Player to cache
      */
     public void cachePlayer(PetropiaPlayer player){
-        if(petropiaPlayerCache.containsValue(player)){
-            return;
+        if(!petropiaPlayerUUIDCache.containsValue(player)){
+            petropiaPlayerUUIDCache.put(player.getUuid(), player);
         }
-        petropiaPlayerCache.put(player.getUuid(), player);
+        if(!petropiaPlayerNameCache.containsValue(player)){
+            petropiaPlayerNameCache.put(player.getUserName(), player);
+        }
     }
 }

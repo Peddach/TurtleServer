@@ -2,6 +2,7 @@ package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
+import de.petropia.turtleServer.server.commands.PlayerCommand;
 import de.petropia.turtleServer.server.prefix.PrefixManager;
 import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
 import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListener;
@@ -28,6 +29,11 @@ public class TurtleServer extends PetropiaPlugin {
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
         cloudNetAdapter = new CloudNetAdapter();
+    }
+
+    private void registerCommands(){
+        getCommand("player").setExecutor(new PlayerCommand());
+        getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
     /**

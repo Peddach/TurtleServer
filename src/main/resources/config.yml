@@ -1,2 +1,8 @@
 Debug:
   ShowDebugMessage: true
+Database:
+  User: TurtleServer
+  Database: TurtleServer
+  Password: password
+  Hostname: 127.0.0.1
+  Port: 27017

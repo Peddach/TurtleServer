@@ -1,10 +1,9 @@
 package de.petropia.turtleServer.server.user.database;
 
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.dao.BasicDAO;
+import dev.morphia.Datastore;
 
-public class PetropiaPlayerDAO extends BasicDAO<PetropiaPlayer, String> {
+public class PetropiaPlayerDAO extends Dao{
 
     /**
      * A simple Data Acess Object for the {@link PetropiaPlayer}

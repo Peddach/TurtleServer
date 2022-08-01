@@ -31,6 +31,8 @@ public class OnPlayerJoinListener implements Listener {
                 break;
             }
             player.updateServer(TurtleServer.getCloudNetAdapter().getServerInstanceName()); //Update Server
+            player.updatePlayer();
+            TurtleServer.getMongoDBHandler().cachePlayer(player);
             return;
         }
         player = new PetropiaPlayer();
