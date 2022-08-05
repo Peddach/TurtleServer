@@ -2,10 +2,7 @@ package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.server.prefix.PrefixManager;
-import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
-import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListener;
-import de.petropia.turtleServer.server.prefix.listener.PlayerJoinListener;
-import de.petropia.turtleServer.server.prefix.listener.PlayerLeaveListener;
+import de.petropia.turtleServer.server.prefix.listener.*;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import org.bukkit.plugin.PluginManager;
@@ -30,6 +27,7 @@ public class TurtleServer extends PetropiaPlugin {
     private void registerListener(){
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new AsyncChatListener(), this);
+        manager.registerEvents(new AsyncChatPreviewListener(), this);
         manager.registerEvents(new PlayerJoinListener(), this);
         manager.registerEvents(new PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
