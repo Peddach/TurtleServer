@@ -89,7 +89,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.mongodb</include>
-                                    <include>org.mongodb.morphia</include>
+                                    <include>dev.morphia.morphia</include>
                                 </includes>
                             </artifactSet>
                             <createDependencyReducedPom>false</createDependencyReducedPom>

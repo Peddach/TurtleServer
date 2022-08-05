@@ -1,29 +1,27 @@
 package de.petropia.turtleServer.server.user.database;
 
-import com.mongodb.*;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClientFactory;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import dev.morphia.mapping.codec.pojo.MorphiaCodec;
+import dev.morphia.query.experimental.filters.Filters;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class MongoDBHandler {
-    private PetropiaPlayerDAO petropiaPlayerDAO;
     private final Hashtable<String, PetropiaPlayer> petropiaPlayerUUIDCache = new Hashtable<>();
     private final Hashtable<String, PetropiaPlayer> petropiaPlayerNameCache = new Hashtable<>();
-
+    private Datastore datastore;
     /**
      * A handler for the {@link PetropiaPlayer} to read and write to the database and cache
      */
@@ -54,13 +52,10 @@ public class MongoDBHandler {
             TurtleServer.getInstance().getLogger().warning("Missing port!");
             return;
         }
-        MongoClient mongoClient = MongoClients.create("mongodb://" + username + ":" + password + "@" + hostname + ":" + port);
-        Datastore datastore = Morphia.createDatastore(mongoClient, database);
+        MongoClient mongoClient = MongoClients.create("mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/?authSource=" + database);
+        datastore = Morphia.createDatastore(mongoClient, database);
         datastore.getMapper().map(PetropiaPlayer.class);
         datastore.ensureIndexes();
-
-        petropiaPlayerDAO = new PetropiaPlayerDAO(PetropiaPlayer.class, datastore);
-        
     }
 
     /**
@@ -76,7 +71,7 @@ public class MongoDBHandler {
                playerCompletableFuture.complete(petropiaPlayerUUIDCache.get(uuid));
                return;
             }
-            PetropiaPlayer player = petropiaPlayerDAO.findOne("uuid", uuid);
+            PetropiaPlayer player = datastore.find(PetropiaPlayer.class).filter(Filters.jsonSchema(Document.parse("{\"uuid\": \"" + uuid + "\"}"))).first();
             if(player != null){
                 playerCompletableFuture.complete(player);
                 return;
@@ -88,8 +83,8 @@ public class MongoDBHandler {
 
     /**
      * Read a player from the cache or, if not present, the database.
-     * @param username Mojang username of player
-     * @return A {@link CompletableFuture} which will be completed when the user is read from the database.
+     * @param username Mojang username of player. Note, some players may share the same name, because the players name was not updated since the last join
+     * @return A {@link CompletableFuture} which will be completed with the player. If two players have the same name, the one who joined last is picked
      * <b>The Future can be completed with null when the player is nether cached nor in the database. This means, he never joined the server or the name has a spelling mistake (case sensetive)</b>
      */
     public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUsername(String username) {
@@ -99,7 +94,23 @@ public class MongoDBHandler {
                 playerCompletableFuture.complete(petropiaPlayerNameCache.get(username));
                 return;
             }
-            PetropiaPlayer player = petropiaPlayerDAO.findOne("userName", username);
+            PetropiaPlayer player = null;
+            List<PetropiaPlayer> playerQuery = datastore.find(PetropiaPlayer.class).filter(Filters.jsonSchema(Document.parse("{\"username\":\""+ username + "\"}"))).stream().toList();
+            if(playerQuery.size() == 1){
+                player = playerQuery.get(0);
+            }
+            if(playerQuery.size() > 1){
+                int lastJoin = 0;
+                PetropiaPlayer currentLastJoin = null;
+                for(PetropiaPlayer i : playerQuery){
+                    if(i.getLastOnline() > lastJoin){
+                        lastJoin = i.getLastOnline();
+                        currentLastJoin = i;
+                    }
+                }
+                player = currentLastJoin;
+            }
+
             if(player != null){
                 playerCompletableFuture.complete(player);
                 return;
@@ -133,7 +144,8 @@ public class MongoDBHandler {
      */
     public void savePlayer(PetropiaPlayer player){
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
-            petropiaPlayerDAO.save(player);
+            TurtleServer.getInstance().getMessageSender().showDebugMessage("Saving player: " + player.getUserName());
+            datastore.save(player);
         });
     }
 

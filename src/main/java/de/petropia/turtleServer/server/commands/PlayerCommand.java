@@ -16,11 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class PlayerCommand implements CommandExecutor, @Nullable TabCompleter {
+public class PlayerCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(sender.hasPermission("TurtleServer.command.player")){
+        if(!sender.hasPermission("TurtleServer.command.player")){
             sender.sendMessage(Component.text("Keine Rechte").color(NamedTextColor.RED));
             return false;
         }
