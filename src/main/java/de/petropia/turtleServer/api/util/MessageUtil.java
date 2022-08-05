@@ -17,7 +17,7 @@ public class MessageUtil {
     private final Component prefix;
 
     /**
-     * A MessageSender is a central class to send messages and other communication stuff to player in the right format
+     * The MessageUtil is a central class to send messages and other communication stuff to player in the right format
      * @param plugin Plugin sending the message
      */
     public MessageUtil(@NotNull PetropiaPlugin plugin) {
