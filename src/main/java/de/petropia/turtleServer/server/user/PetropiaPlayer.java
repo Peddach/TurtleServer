@@ -2,15 +2,17 @@ package de.petropia.turtleServer.server.user;
 
 import de.petropia.turtleServer.server.TurtleServer;
 import dev.morphia.annotations.*;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Entity(value = "players")
 public class PetropiaPlayer {
 
     @Id
-    private int id;
+    private ObjectId id;
     @Indexed(options = @IndexOptions(unique = true))
     private String uuid;
     @Indexed
@@ -21,7 +23,7 @@ public class PetropiaPlayer {
     private String server;
     private int lastOnline;
     @Property(value = "name_history")
-    private List<String> nameHistory;
+    private List<String> nameHistory = new ArrayList<>();
 
     /**
      * A PetropiaPlayer is a player profile for the petropia network.
@@ -36,7 +38,7 @@ public class PetropiaPlayer {
     /**
      * @return The database id of this {@link PetropiaPlayer} object
      */
-    public int getId() {
+    public ObjectId getId() {
         return id;
     }
 
@@ -164,7 +166,7 @@ public class PetropiaPlayer {
     /**
      * Updated the player on the Database
      */
-    public void updatePlayer(){
-        TurtleServer.getMongoDBHandler().savePlayer(this);
+    public CompletableFuture<PetropiaPlayer> updatePlayer(){
+        return TurtleServer.getMongoDBHandler().savePlayer(this);
     }
 }

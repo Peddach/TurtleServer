@@ -9,6 +9,7 @@ import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListe
 import de.petropia.turtleServer.server.prefix.listener.PlayerJoinListener;
 import de.petropia.turtleServer.server.prefix.listener.PlayerLeaveListener;
 import de.petropia.turtleServer.server.user.database.MongoDBHandler;
+import de.petropia.turtleServer.server.user.database.listener.OnPlayerJoinListener;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import org.bukkit.plugin.PluginManager;
@@ -26,14 +27,15 @@ public class TurtleServer extends PetropiaPlugin {
         reloadConfig();
         instance = this;
         registerListener();
+        registerCommands();
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
         cloudNetAdapter = new CloudNetAdapter();
     }
 
     private void registerCommands(){
-        getCommand("player").setExecutor(new PlayerCommand());
-        getCommand("player").setTabCompleter(new PlayerCommand());
+        this.getCommand("player").setExecutor(new PlayerCommand());
+        this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
     /**
@@ -44,6 +46,8 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new AsyncChatListener(), this);
         manager.registerEvents(new PlayerJoinListener(), this);
         manager.registerEvents(new PlayerLeaveListener(), this);
+        manager.registerEvents(new OnPlayerJoinListener(), this);
+        manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
 

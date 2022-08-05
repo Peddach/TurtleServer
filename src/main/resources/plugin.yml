@@ -8,5 +8,7 @@ depend:
 api-version: 1.19
 commands:
   player:
-    permission: TurtleServer.command.player
     description: Manage player cache and player info
+permissions:
+  TurtleServer.debug:
+    description: "Allow player to see debug message"
