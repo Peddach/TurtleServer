@@ -1,5 +1,6 @@
-package de.petropia.turtleServer.api;
+package de.petropia.turtleServer.api.util;
 
+import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -11,15 +12,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageSender {
+public class MessageUtil {
 
     private final Component prefix;
 
     /**
-     * A MessageSender is a central class to send messages and other communication stuff to player in the right format
+     * The MessageUtil is a central class to send messages and other communication stuff to player in the right format
      * @param plugin Plugin sending the message
      */
-    public MessageSender(@NotNull PetropiaPlugin plugin) {
+    public MessageUtil(@NotNull PetropiaPlugin plugin) {
         String pluginName = plugin.getDescription().getName();
         this.prefix = Component.text("[").color(NamedTextColor.GRAY)
                 .append(Component.text(pluginName).color(NamedTextColor.GOLD))
