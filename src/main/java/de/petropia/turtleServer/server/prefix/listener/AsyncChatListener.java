@@ -12,6 +12,7 @@ public class AsyncChatListener implements Listener {
 
     /**
      * Listenen on Chat event and format the message right
+     *
      * @param event {@link AsyncChatEvent}
      */
     @EventHandler

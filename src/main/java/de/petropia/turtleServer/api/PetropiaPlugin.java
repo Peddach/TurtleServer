@@ -9,10 +9,18 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     private final MessageUtil messageUtil = new MessageUtil(this);
 
     /**
-     * Get the plugin specific instance of {@link MessageUtil}
-     * @return instance of {@link MessageUtil}
+     * @deprecated Only for allready intedrated plugins. Use {@link PetropiaPlugin#getMessageUtil()} instead
+     * @return current instance for Plugin
      */
+    @Deprecated
     public MessageUtil getMessageSender(){
+        return messageUtil;
+    }
+
+    /**
+     * @return Current instance if MessageUtil
+     */
+    public MessageUtil getMessageUtil(){
         return messageUtil;
     }
 }

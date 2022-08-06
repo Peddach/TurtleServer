@@ -20,6 +20,27 @@ public class TurtleServer extends PetropiaPlugin {
     private static MongoDBHandler mongoDBHandler;
     private static CloudNetAdapter cloudNetAdapter;
 
+    /**
+     * @return current instance of the turtleServer plugin
+     */
+    public static TurtleServer getInstance() {
+        return instance;
+    }
+
+    /**
+     * @return The current instance of the {@link MongoDBHandler}
+     */
+    public static MongoDBHandler getMongoDBHandler() {
+        return mongoDBHandler;
+    }
+
+    /**
+     * @return current instance of the Cloudnet adapter
+     */
+    public static CloudNetAdapter getCloudNetAdapter() {
+        return cloudNetAdapter;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();    //save default config
@@ -33,7 +54,7 @@ public class TurtleServer extends PetropiaPlugin {
         cloudNetAdapter = new CloudNetAdapter();
     }
 
-    private void registerCommands(){
+    private void registerCommands() {
         this.getCommand("player").setExecutor(new PlayerCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
@@ -41,7 +62,7 @@ public class TurtleServer extends PetropiaPlugin {
     /**
      * Method to register all listener for TurtleServer
      */
-    private void registerListener(){
+    private void registerListener() {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new AsyncChatListener(), this);
         manager.registerEvents(new PlayerJoinListener(), this);
@@ -49,25 +70,6 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new OnPlayerJoinListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
-    }
-
-    /**
-     * @return current instance of the turtleServer plugin
-     */
-    public static TurtleServer getInstance() {
-        return instance;
-    }
-
-    /**
-     * @return The current instance of the {@link MongoDBHandler}
-     */
-    public static MongoDBHandler getMongoDBHandler() { return mongoDBHandler; }
-
-    /**
-     * @return current instance of the Cloudnet adapter
-     */
-    public static CloudNetAdapter getCloudNetAdapter() {
-        return cloudNetAdapter;
     }
 
 }
