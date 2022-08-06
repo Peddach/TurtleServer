@@ -6,3 +6,9 @@ description: "Core system of petropia.de"
 depend:
   - "LuckPerms"
 api-version: 1.19
+commands:
+  player:
+    description: Manage player cache and player info
+permissions:
+  TurtleServer.debug:
+    description: "Allow player to see debug message"
