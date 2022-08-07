@@ -8,7 +8,7 @@ public class TimeUtil {
 
     public static String unixTimestampToString(int timestamp){
         Date date = Date.from(Instant.ofEpochSecond(timestamp));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         return simpleDateFormat.format(date);
     }
 }
