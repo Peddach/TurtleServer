@@ -1,5 +1,6 @@
 package de.petropia.turtleServer.server.commands;
 
+import de.petropia.turtleServer.api.util.TimeUtil;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
 import net.kyori.adventure.text.Component;
@@ -75,7 +76,7 @@ public class PlayerCommand implements CommandExecutor, TabCompleter {
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("NAME: " + petropiaPlayer.getUserName()));
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("ONLINE: " + petropiaPlayer.isOnline()));
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("SERVER: " + petropiaPlayer.getServer()));
-        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("LAST ONLINE: " + petropiaPlayer.getLastOnline()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("LAST ONLINE: " + TimeUtil.unixTimestampToString(petropiaPlayer.getLastOnline())));
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("HISTORY: " + nameHistoryAsString(petropiaPlayer)));
     }
 
