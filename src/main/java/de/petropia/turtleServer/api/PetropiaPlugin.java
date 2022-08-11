@@ -61,7 +61,7 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     /**
      * Creates necessary config information it if it doesn't exist
      */
-    private void createConfigData(){
+    protected void createConfigData(){
         //Database information
         if(!getConfig().contains("DatabaseAddress")){
             getConfig().set("DatabaseAddress", "localhost");
