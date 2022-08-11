@@ -83,6 +83,8 @@ public abstract class PetropiaPlugin extends JavaPlugin {
         if(!getConfig().contains("ArenaCount")){
             getConfig().set("ArenaCount", 1);
         }
+
+        saveConfig();
     }
 
     /**
