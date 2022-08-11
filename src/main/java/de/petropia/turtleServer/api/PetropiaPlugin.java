@@ -6,7 +6,7 @@ import de.petropia.turtleServer.api.arena.Arena;
 import de.petropia.turtleServer.api.mysql.Database;
 import de.petropia.turtleServer.api.util.MessageUtil;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
-import de.petropia.turtleServer.server.user.PetropiaPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     private static PetropiaPlugin plugin;
 
     private final List<Arena> arenas = new ArrayList<>();
-    private final Hashtable<PetropiaPlayer, Arena> playerArenas = new Hashtable<>();
+    private final Hashtable<Player, Arena> playerArenas = new Hashtable<>();
     private final MessageUtil messageUtil = new MessageUtil(this);
     private final Database database = new Database(this);
     private final CloudNetAdapter cloudNetAdapter = new CloudNetAdapter();
@@ -102,7 +102,7 @@ public abstract class PetropiaPlugin extends JavaPlugin {
         return arenas;
     }
 
-    public Hashtable<PetropiaPlayer, Arena> getPlayerArenas() {
+    public Hashtable<Player, Arena> getPlayerArenas() {
         return playerArenas;
     }
 
