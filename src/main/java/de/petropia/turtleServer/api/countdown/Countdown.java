@@ -1,7 +1,7 @@
 package de.petropia.turtleServer.api.countdown;
 
+import de.petropia.turtleServer.api.PetropiaPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class Countdown {
 
@@ -15,7 +15,7 @@ public abstract class Countdown {
      * @param startSeconds The amount of seconds, that the countdown starts with
      * @param async if {@code true}: runs the task asynchronously
      */
-    public Countdown(JavaPlugin plugin, int startSeconds, boolean async) {
+    public Countdown(PetropiaPlugin plugin, int startSeconds, boolean async) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
         if(async) {
@@ -31,6 +31,20 @@ public abstract class Countdown {
         }
     }
 
+    /**
+     * Tells bukkit to schedule a task, that repeats every second
+     * @param plugin The plugin, that schedules the task
+     * @param startSeconds The amount of seconds, that the countdown starts with
+     */
+    public Countdown(PetropiaPlugin plugin, int startSeconds) {
+        this.startSeconds = startSeconds;
+        seconds = startSeconds;
+        taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            runTasks();
+            seconds--;
+        },0,20);
+    }
+    
     /**
      * Gets executed every second
      */
