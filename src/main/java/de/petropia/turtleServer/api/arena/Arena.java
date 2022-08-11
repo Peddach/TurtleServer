@@ -2,6 +2,8 @@ package de.petropia.turtleServer.api.arena;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.arena.gamestate.GameState;
+import de.petropia.turtleServer.api.util.MessageUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -34,6 +36,16 @@ public abstract class Arena {
 
     public void updateArena(){
         PetropiaPlugin.getPlugin().getDatabase().updateArena(this);
+    }
+
+    /**
+     * Sends a message to every player in this arena
+     * @param message The message, that should be sent
+     */
+    public void broadcast(String message){
+        for(Player player : players) {
+            PetropiaPlugin.getPlugin().getMessageUtil().sendMessage(player, Component.text(message));
+        }
     }
 
     /**

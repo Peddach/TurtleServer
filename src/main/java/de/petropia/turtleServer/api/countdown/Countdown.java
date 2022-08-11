@@ -11,20 +11,19 @@ public abstract class Countdown {
 
     /**
      * Tells bukkit to schedule a task, that repeats every second
-     * @param plugin The plugin, that schedules the task
      * @param startSeconds The amount of seconds, that the countdown starts with
      * @param async if {@code true}: runs the task asynchronously
      */
-    public Countdown(PetropiaPlugin plugin, int startSeconds, boolean async) {
+    public Countdown(int startSeconds, boolean async) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
         if(async) {
-            taskID = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(PetropiaPlugin.getPlugin(), () -> {
                 runTasks();
                 seconds--;
             },0,20).getTaskId();
         }else{
-            taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaPlugin.getPlugin(), () -> {
                 runTasks();
                 seconds--;
             },0,20);
@@ -33,18 +32,17 @@ public abstract class Countdown {
 
     /**
      * Tells bukkit to schedule a task, that repeats every second
-     * @param plugin The plugin, that schedules the task
      * @param startSeconds The amount of seconds, that the countdown starts with
      */
-    public Countdown(PetropiaPlugin plugin, int startSeconds) {
+    public Countdown(int startSeconds) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
-        taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+        taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaPlugin.getPlugin(), () -> {
             runTasks();
             seconds--;
         },0,20);
     }
-    
+
     /**
      * Gets executed every second
      */
