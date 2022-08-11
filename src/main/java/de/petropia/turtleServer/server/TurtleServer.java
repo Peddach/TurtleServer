@@ -1,7 +1,6 @@
 package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
-import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
 import de.petropia.turtleServer.server.commands.PlayerCommand;
 import de.petropia.turtleServer.server.prefix.PrefixManager;
 import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
@@ -15,17 +14,7 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import org.bukkit.plugin.PluginManager;
 
 public class TurtleServer extends PetropiaPlugin {
-
-    private static TurtleServer instance;
     private static MongoDBHandler mongoDBHandler;
-    private static CloudNetAdapter cloudNetAdapter;
-
-    /**
-     * @return current instance of the turtleServer plugin
-     */
-    public static TurtleServer getInstance() {
-        return instance;
-    }
 
     /**
      * @return The current instance of the {@link MongoDBHandler}
@@ -34,24 +23,25 @@ public class TurtleServer extends PetropiaPlugin {
         return mongoDBHandler;
     }
 
-    /**
-     * @return current instance of the Cloudnet adapter
-     */
-    public static CloudNetAdapter getCloudNetAdapter() {
-        return cloudNetAdapter;
-    }
-
     @Override
-    public void onEnable() {
+    protected void runOnEnableTasks() {
         saveDefaultConfig();    //save default config
         saveConfig();
         reloadConfig();
-        instance = this;
         registerListener();
         registerCommands();
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
-        cloudNetAdapter = new CloudNetAdapter();
+    }
+
+    @Override
+    protected void runOnDisableTasks() {
+
+    }
+
+    @Override
+    protected PetropiaPlugin setPlugin() {
+        return this;
     }
 
     private void registerCommands() {

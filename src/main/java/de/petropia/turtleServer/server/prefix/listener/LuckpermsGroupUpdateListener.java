@@ -13,7 +13,7 @@ public class LuckpermsGroupUpdateListener {
      * @param event {@link UserDataRecalculateEvent}
      */
     public void onGroupUpdate(UserDataRecalculateEvent event) {
-        Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(TurtleServer.getPlugin(), () -> {
             Player player = Bukkit.getPlayer(event.getUser().getUniqueId());
             if (player != null)
                 PrefixManager.getInstance().setDefaultPrefix(player);

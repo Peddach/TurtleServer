@@ -22,7 +22,7 @@ public class PlayerLeaveListener implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event){
         RECENT_LEFT.add(event.getPlayer().getUniqueId());
-        Bukkit.getScheduler().runTaskLater(TurtleServer.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskLater(TurtleServer.getPlugin(), () -> {
             RECENT_LEFT.remove(event.getPlayer().getUniqueId());
         }, 30);
         TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.getPlayer().getUniqueId().toString()).thenAccept(petropiaPlayer -> {

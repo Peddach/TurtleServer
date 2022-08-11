@@ -30,6 +30,10 @@
             <id>cloudnet-releases</id>
             <url>https://repo.cloudnetservice.eu/repository/releases/</url>
         </repository>
+        <repository>
+            <id>OnARandomBox</id>
+            <url>https://repo.onarandombox.com/content/groups/public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -59,6 +63,12 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.19-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
