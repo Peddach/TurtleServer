@@ -27,7 +27,7 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     public void onEnable() {
         plugin = setPlugin();
 
-        createDatabaseConfigData();
+        createConfigData();
         database.connect();
 
         MultiverseCore mvCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -57,9 +57,10 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     protected abstract PetropiaPlugin setPlugin();
 
     /**
-     * Creates necessary database information it if it doesn't exist
+     * Creates necessary config information it if it doesn't exist
      */
-    private void createDatabaseConfigData(){
+    private void createConfigData(){
+        //Database information
         if(!getConfig().contains("DatabaseAddress")){
             getConfig().set("DatabaseAddress", "localhost");
         }
@@ -74,6 +75,11 @@ public abstract class PetropiaPlugin extends JavaPlugin {
         }
         if(!getConfig().contains("DatabasePassword")){
             getConfig().set("DatabasePassword", "");
+        }
+
+        //Arena information
+        if(!getConfig().contains("ArenaCount")){
+            getConfig().set("ArenaCount", 1);
         }
     }
 
