@@ -2,8 +2,8 @@ package de.petropia.turtleServer.api.arena;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.arena.gamestate.GameState;
-import de.petropia.turtleServer.server.user.PetropiaPlayer;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public abstract class Arena {
 
     protected final String name;
     protected final World world;
-    protected final List<PetropiaPlayer> players = new ArrayList<>();
+    protected final List<Player> players = new ArrayList<>();
 
     protected GameState state;
 
@@ -52,7 +52,7 @@ public abstract class Arena {
         return name;
     }
 
-    public List<PetropiaPlayer> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
