@@ -6,9 +6,11 @@ import de.petropia.turtleServer.api.arena.Arena;
 import de.petropia.turtleServer.api.mysql.Database;
 import de.petropia.turtleServer.api.util.MessageUtil;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public abstract class PetropiaPlugin extends JavaPlugin {
@@ -16,7 +18,7 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     private static PetropiaPlugin plugin;
 
     private final List<Arena> arenas = new ArrayList<>();
-    //Create Message sender instance specific for the plugin
+    private final Hashtable<Player, Arena> playerArenas = new Hashtable<>();
     private final MessageUtil messageUtil = new MessageUtil(this);
     private final Database database = new Database(this);
     private final CloudNetAdapter cloudNetAdapter = new CloudNetAdapter();
@@ -100,9 +102,10 @@ public abstract class PetropiaPlugin extends JavaPlugin {
         return arenas;
     }
 
-    /**
-     * @return Current instance if MessageUtil
-     */
+    public Hashtable<Player, Arena> getPlayerArenas() {
+        return playerArenas;
+    }
+
     public MessageUtil getMessageUtil(){
         return messageUtil;
     }
