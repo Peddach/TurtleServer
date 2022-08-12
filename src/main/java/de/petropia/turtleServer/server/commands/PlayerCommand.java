@@ -37,7 +37,7 @@ public class PlayerCommand implements CommandExecutor, TabCompleter {
             for(PetropiaPlayer player : TurtleServer.getMongoDBHandler().getChachedPlayers()){
                 printPlayerInfo(player, bukkitPlayer);
             }
-            TurtleServer.getPlugin().getMessageUtil().sendMessage(bukkitPlayer, Component.text("Spieler im cache: " + TurtleServer.getMongoDBHandler().getChachedPlayers().size()));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(bukkitPlayer, Component.text("Spieler im cache: " + TurtleServer.getMongoDBHandler().getChachedPlayers().size()));
         }
         if(args[0].equalsIgnoreCase("info")){
             if(args.length == 1){
@@ -64,20 +64,20 @@ public class PlayerCommand implements CommandExecutor, TabCompleter {
                 });
             }
             else {
-                TurtleServer.getPlugin().getMessageUtil().sendMessage(bukkitPlayer, Component.text("Bitte gib einen Namen oder eine uuid an!").color(NamedTextColor.RED));
+                TurtleServer.getInstance().getMessageUtil().sendMessage(bukkitPlayer, Component.text("Bitte gib einen Namen oder eine uuid an!").color(NamedTextColor.RED));
             }
         }
         return false;
     }
 
     private void printPlayerInfo(PetropiaPlayer petropiaPlayer, Player sender){
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("ID: " + petropiaPlayer.getId().toHexString()));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("UUID: " + petropiaPlayer.getUuid()));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("NAME: " + petropiaPlayer.getUserName()));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("ONLINE: " + petropiaPlayer.isOnline()));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("SERVER: " + petropiaPlayer.getServer()));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("LAST ONLINE: " + TimeUtil.unixTimestampToString(petropiaPlayer.getLastOnline())));
-        TurtleServer.getPlugin().getMessageUtil().sendMessage(sender, Component.text("HISTORY: " + nameHistoryAsString(petropiaPlayer)));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("ID: " + petropiaPlayer.getId().toHexString()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("UUID: " + petropiaPlayer.getUuid()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("NAME: " + petropiaPlayer.getUserName()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("ONLINE: " + petropiaPlayer.isOnline()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("SERVER: " + petropiaPlayer.getServer()));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("LAST ONLINE: " + TimeUtil.unixTimestampToString(petropiaPlayer.getLastOnline())));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("HISTORY: " + nameHistoryAsString(petropiaPlayer)));
     }
 
     private String nameHistoryAsString(PetropiaPlayer petropiaPlayer) {
@@ -90,7 +90,7 @@ public class PlayerCommand implements CommandExecutor, TabCompleter {
 
     private void sendMessage(CommandSender sender, Component message){
         if(sender instanceof Player player){
-            TurtleServer.getPlugin().getMessageUtil().sendMessage(player, message);
+            TurtleServer.getInstance().getMessageUtil().sendMessage(player, message);
             return;
         }
         sender.sendMessage(message);

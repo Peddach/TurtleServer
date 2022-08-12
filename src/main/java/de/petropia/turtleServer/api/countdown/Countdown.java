@@ -1,6 +1,6 @@
 package de.petropia.turtleServer.api.countdown;
 
-import de.petropia.turtleServer.api.PetropiaPlugin;
+import de.petropia.turtleServer.api.PetropiaMinigame;
 import org.bukkit.Bukkit;
 
 public abstract class Countdown {
@@ -18,12 +18,12 @@ public abstract class Countdown {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
         if(async) {
-            taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(PetropiaPlugin.getPlugin(), () -> {
+            taskID = PetropiaMinigame.getPlugin().getServer().getScheduler().runTaskTimerAsynchronously(PetropiaMinigame.getPlugin(), () -> {
                 runTasks();
                 seconds--;
             },0,20).getTaskId();
         }else{
-            taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaPlugin.getPlugin(), () -> {
+            taskID = PetropiaMinigame.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaMinigame.getPlugin(), () -> {
                 runTasks();
                 seconds--;
             },0,20);
@@ -37,7 +37,7 @@ public abstract class Countdown {
     public Countdown(int startSeconds) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
-        taskID = PetropiaPlugin.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaPlugin.getPlugin(), () -> {
+        taskID = PetropiaMinigame.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaMinigame.getPlugin(), () -> {
             runTasks();
             seconds--;
         },0,20);

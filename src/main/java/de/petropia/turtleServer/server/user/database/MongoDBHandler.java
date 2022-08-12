@@ -25,30 +25,30 @@ public class MongoDBHandler {
      * A handler for the {@link PetropiaPlayer} to read and write to the database and cache
      */
     public MongoDBHandler() {
-        FileConfiguration configuration = TurtleServer.getPlugin().getConfig();   //loading credentails from config
+        FileConfiguration configuration = TurtleServer.getInstance().getConfig();   //loading credentails from config
         String hostname = configuration.getString("Mongo.Hostname");
         int port = configuration.getInt("Mongo.Port");
         String username = configuration.getString("Mongo.User");
         String database = configuration.getString("Mongo.Database");
         String password = configuration.getString("Mongo.Password");
         if (password == null) {
-            TurtleServer.getPlugin().getLogger().warning("Missing password!");
+            TurtleServer.getInstance().getLogger().warning("Missing password!");
             return;
         }
         if (username == null) {
-            TurtleServer.getPlugin().getLogger().warning("Missing username!");
+            TurtleServer.getInstance().getLogger().warning("Missing username!");
             return;
         }
         if (database == null) {
-            TurtleServer.getPlugin().getLogger().warning("Missing database!");
+            TurtleServer.getInstance().getLogger().warning("Missing database!");
             return;
         }
         if (hostname == null) {
-            TurtleServer.getPlugin().getLogger().warning("Missing hostname!");
+            TurtleServer.getInstance().getLogger().warning("Missing hostname!");
             return;
         }
         if (port == 0) {
-            TurtleServer.getPlugin().getLogger().warning("Missing port!");
+            TurtleServer.getInstance().getLogger().warning("Missing port!");
             return;
         }
         MongoClient mongoClient = MongoClients.create("mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/?authSource=" + database);
@@ -66,7 +66,7 @@ public class MongoDBHandler {
      */
     public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUUID(String uuid) {
         CompletableFuture<PetropiaPlayer> playerCompletableFuture = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getPlugin(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             if (petropiaPlayerUUIDCache.contains(uuid)) {
                 playerCompletableFuture.complete(petropiaPlayerUUIDCache.get(uuid));
                 return;
@@ -90,7 +90,7 @@ public class MongoDBHandler {
      */
     public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUsername(String username) {
         CompletableFuture<PetropiaPlayer> playerCompletableFuture = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getPlugin(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             if (petropiaPlayerNameCache.contains(username)) {
                 playerCompletableFuture.complete(petropiaPlayerNameCache.get(username));
                 return;
@@ -148,7 +148,7 @@ public class MongoDBHandler {
      */
     public CompletableFuture<PetropiaPlayer> savePlayer(PetropiaPlayer player) {
         CompletableFuture<PetropiaPlayer> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getPlugin(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             datastore.save(player);
             future.complete(player);
         });

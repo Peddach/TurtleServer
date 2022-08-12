@@ -59,7 +59,7 @@ public class MessageUtil {
      * @param message Debug message as {@link Component}
      */
     public void showDebugMessage(Component message) {
-        if (!TurtleServer.getPlugin().getConfig().getBoolean("Debug.ShowDebugMessage")) {
+        if (!TurtleServer.getInstance().getConfig().getBoolean("Debug.ShowDebugMessage")) {
             return;
         }
         List<Player> players = new ArrayList<>();

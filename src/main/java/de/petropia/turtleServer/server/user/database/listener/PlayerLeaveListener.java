@@ -2,10 +2,7 @@ package de.petropia.turtleServer.server.user.database.listener;
 
 import de.dytanic.cloudnet.ext.bridge.bukkit.event.BukkitBridgeProxyPlayerDisconnectEvent;
 import de.petropia.turtleServer.server.TurtleServer;
-import de.petropia.turtleServer.server.user.PetropiaPlayer;
-import de.petropia.turtleServer.server.user.database.MongoDBHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -22,7 +19,7 @@ public class PlayerLeaveListener implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event){
         RECENT_LEFT.add(event.getPlayer().getUniqueId());
-        Bukkit.getScheduler().runTaskLater(TurtleServer.getPlugin(), () -> {
+        Bukkit.getScheduler().runTaskLater(TurtleServer.getInstance(), () -> {
             RECENT_LEFT.remove(event.getPlayer().getUniqueId());
         }, 30);
         TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.getPlayer().getUniqueId().toString()).thenAccept(petropiaPlayer -> {

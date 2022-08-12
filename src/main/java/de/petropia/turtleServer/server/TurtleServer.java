@@ -14,6 +14,9 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import org.bukkit.plugin.PluginManager;
 
 public class TurtleServer extends PetropiaPlugin {
+
+    private static TurtleServer plugin;
+
     private static MongoDBHandler mongoDBHandler;
 
     /**
@@ -25,11 +28,10 @@ public class TurtleServer extends PetropiaPlugin {
 
     @Override
     protected void runOnEnableTasks() {
+        plugin = this;
         saveDefaultConfig();    //save default config
         saveConfig();
         reloadConfig();
-        registerListener();
-        registerCommands();
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
     }
@@ -40,19 +42,13 @@ public class TurtleServer extends PetropiaPlugin {
     }
 
     @Override
-    protected PetropiaPlugin setPlugin() {
-        return this;
-    }
-
-    private void registerCommands() {
+    protected void registerCommands() {
         this.getCommand("player").setExecutor(new PlayerCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
-    /**
-     * Method to register all listener for TurtleServer
-     */
-    private void registerListener() {
+    @Override
+    protected void registerListeners() {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new AsyncChatListener(), this);
         manager.registerEvents(new PlayerJoinListener(), this);
@@ -62,4 +58,7 @@ public class TurtleServer extends PetropiaPlugin {
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
 
+    public static TurtleServer getInstance() {
+        return plugin;
+    }
 }

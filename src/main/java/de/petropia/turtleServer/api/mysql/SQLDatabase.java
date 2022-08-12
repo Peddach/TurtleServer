@@ -1,29 +1,30 @@
 package de.petropia.turtleServer.api.mysql;
 
+import de.petropia.turtleServer.api.PetropiaMinigame;
 import de.petropia.turtleServer.api.arena.Arena;
 import org.bukkit.Bukkit;
 
-import de.petropia.turtleServer.api.PetropiaPlugin;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.util.concurrent.CompletableFuture;
 
-public class Database {
+public class SQLDatabase {
 
-    private final PetropiaPlugin plugin;
+    private final PetropiaMinigame plugin;
     private Connection con;
     private boolean isConnected;
 
-    public Database(PetropiaPlugin plugin) {
+    public SQLDatabase(PetropiaMinigame plugin) {
         this.plugin = plugin;
     }
 
     public void connect(){
-        String address = plugin.getConfig().getString("DatabaseAddress");
-        String port = plugin.getConfig().getString("DatabasePort");
-        String database = plugin.getConfig().getString("Database");
-        String username = plugin.getConfig().getString("DatabaseUsername");
-        String password = plugin.getConfig().getString("DatabasePassword");
+        String address = plugin.getConfig().getString("Database.Address");
+        String port = plugin.getConfig().getString("Database.Port");
+        String database = plugin.getConfig().getString("Database.Name");
+        String username = plugin.getConfig().getString("Database.Username");
+        String password = plugin.getConfig().getString("Database.Password");
 
         if(!isConnected){
             try{
@@ -98,36 +99,41 @@ public class Database {
      * @param arena the arena to delete
      */
     public void deleteArena(Arena arena){
-        try {
-            PreparedStatement st = con.prepareStatement("DELETE FROM arenas WHERE name = ?");
-            st.setString(1, arena.getName());
-            st.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(PetropiaMinigame.getPlugin(), () -> {
+            try {
+                PreparedStatement st = con.prepareStatement("DELETE FROM arenas WHERE name = ?");
+                st.setString(1, arena.getName());
+                st.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
      * @param player The player that joins the server
      * @return The arena that the joining player should be put in
      */
-    public Arena getJoiningPlayerArena(Player player){
-        Arena arena = null;
-        try{
-            PreparedStatement st = con.prepareStatement("SELECT arena FROM joiningPlayers WHERE name = ?");
-            st.setString(1, player.getName());
-            ResultSet rs = st.executeQuery();
-            if(rs.next()){
-                for(Arena a : plugin.getArenas()){
-                    if(a.getName().equals(rs.getString("arena"))){
-                        arena = a;
+    public CompletableFuture<Arena> getJoiningPlayerArena(Player player){
+        CompletableFuture<Arena> completableFuture = new CompletableFuture<>();
+        Bukkit.getScheduler().runTaskAsynchronously(PetropiaMinigame.getPlugin(), () -> {
+            try{
+                PreparedStatement st = con.prepareStatement("SELECT arena FROM joiningPlayers WHERE name = ?");
+                st.setString(1, player.getName());
+                ResultSet rs = st.executeQuery();
+                if(rs.next()){
+                    for(Arena arena : plugin.getArenas()){
+                        if(arena.getName().equals(rs.getString("arena"))){
+                            completableFuture.complete(arena);
+                            break;
+                        }
                     }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return arena;
+        });
+        return completableFuture;
     }
 
     /**
