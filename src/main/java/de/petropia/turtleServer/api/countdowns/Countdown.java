@@ -1,4 +1,4 @@
-package de.petropia.turtleServer.api.countdown;
+package de.petropia.turtleServer.api.countdowns;
 
 import de.petropia.turtleServer.api.PetropiaMinigame;
 import org.bukkit.Bukkit;

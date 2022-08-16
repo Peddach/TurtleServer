@@ -16,14 +16,19 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
     private final de.petropia.turtleServer.api.mysql.SQLDatabase SQLDatabase = new SQLDatabase(this);
     private final List<Arena> arenas = new ArrayList<>();
     private final Hashtable<Player, Arena> playerArenas = new Hashtable<>();
+
+    private int maxPlayers;
     private MVWorldManager worldManager;
 
     @Override
     public void onEnable() {
         super.onEnable();
+
         plugin = setPlugin();
 
         createConfigData();
+
+        maxPlayers = getConfig().getInt("MaxPlayers");
 
         SQLDatabase.connect();
 
@@ -71,6 +76,11 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
             getConfig().set("ArenaCount", 1);
         }
 
+        //Player information
+        if(!getConfig().contains("MaxPlayers")){
+            getConfig().set("MaxPlayers", 1);
+        }
+
         saveConfig();
     }
 
@@ -78,6 +88,10 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
 
     public static PetropiaMinigame getPlugin() {
         return plugin;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     public de.petropia.turtleServer.api.mysql.SQLDatabase getSQLDatabase() {
