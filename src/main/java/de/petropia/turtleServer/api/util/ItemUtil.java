@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import java.util.List;
@@ -114,10 +113,11 @@ public class ItemUtil {
      * @param potionType The type of the potion
      * @param amount The amount of potions in the ItemStack
      * @param splash if {@code true}, creates a splash potion instead of a normal one
+     * @param enchanted if {@code true}: adds enchantment glow to the potion
      * @param lore The content of the item-lore of the potion
      * @return A potion ItemStack
      */
-    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component... lore){
+    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, boolean enchanted, Component... lore){
         ItemStack potion;
 
         if(splash){
@@ -131,6 +131,11 @@ public class ItemUtil {
         meta.lore(List.of(lore));
         meta.setBasePotionData(new PotionData(potionType));
 
+        if(enchanted){
+            meta.addEnchant(Enchantment.LUCK, 1, false);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+
         potion.setItemMeta(meta);
 
         return potion;
@@ -140,11 +145,12 @@ public class ItemUtil {
      * @param potionType The type of the potion
      * @param amount The amount of potions in the ItemStack
      * @param splash if {@code true}, creates a splash potion instead of a normal one
+     * @param enchanted if {@code true}: adds enchantment glow to the potion
      * @param displayName The displayName of the potion
      * @param lore The content of the item-lore of the potion
      * @return A potion ItemStack
      */
-    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component displayName, Component... lore){
+    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, boolean enchanted, Component displayName, Component... lore){
         ItemStack potion;
 
         if(splash){
@@ -158,6 +164,11 @@ public class ItemUtil {
         meta.displayName(displayName);
         meta.lore(List.of(lore));
         meta.setBasePotionData(new PotionData(potionType));
+
+        if(enchanted){
+            meta.addEnchant(Enchantment.LUCK, 1, false);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
 
         potion.setItemMeta(meta);
 
