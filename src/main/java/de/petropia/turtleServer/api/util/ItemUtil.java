@@ -117,7 +117,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the potion
      * @return A potion ItemStack
      */
-    public ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component... lore){
+    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component... lore){
         ItemStack potion;
 
         if(splash){
@@ -144,7 +144,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the potion
      * @return A potion ItemStack
      */
-    public ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component displayName, Component... lore){
+    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, Component displayName, Component... lore){
         ItemStack potion;
 
         if(splash){
