@@ -41,12 +41,14 @@ public class ItemUtil {
      * @param material The material of the returned ItemStack
      * @param amount The amount of items in the ItemStack
      * @param enchanted if {@code true}: adds enchantment glow to the returned ItemStack
+     * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, int amount, boolean enchanted){
+    public static ItemStack createItem(Material material, int amount, boolean enchanted, Component... lore){
         ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
+        meta.lore(List.of(lore));
 
         if(enchanted){
             meta.addEnchant(Enchantment.LUCK, 1, false);
