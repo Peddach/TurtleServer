@@ -23,7 +23,6 @@ public class GameStartCountdown extends Countdown {
                 case 1 -> arena.broadcast(Component.text("Das Spiel startet in einer Sekunde!"));
                 case 0 -> {
                     arena.setState(GameState.INGAME);
-                    //Init inGame-phase
                     arena.updateArena();
                     stop();
                 }
