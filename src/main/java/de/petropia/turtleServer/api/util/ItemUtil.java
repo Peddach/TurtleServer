@@ -13,13 +13,14 @@ public class ItemUtil {
 
     /**
      * @param material The material of the returned ItemStack
+     * @param amount The amount of items in the ItemStack
      * @param displayName The displayName of the returned ItemStack
      * @param enchanted if {@code true}: adds enchantment glow to the returned ItemStack
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, Component displayName, boolean enchanted, Component... lore){
-        ItemStack item = new ItemStack(material);
+    public static ItemStack createItem(Material material, int amount, Component displayName, boolean enchanted, Component... lore){
+        ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
 
@@ -38,11 +39,12 @@ public class ItemUtil {
 
     /**
      * @param material The material of the returned ItemStack
+     * @param amount The amount of items in the ItemStack
      * @param enchanted if {@code true}: adds enchantment glow to the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, boolean enchanted){
-        ItemStack item = new ItemStack(material);
+    public static ItemStack createItem(Material material, int amount, boolean enchanted){
+        ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
 
@@ -58,12 +60,13 @@ public class ItemUtil {
 
     /**
      * @param material The material of the returned ItemStack
+     * @param amount The amount of items in the ItemStack
      * @param enchantments The enchantments, the item should have
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
-        ItemStack item = new ItemStack(material);
+    public static ItemStack createItem(Material material, int amount, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+        ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
         meta.lore(List.of(lore));
@@ -79,13 +82,14 @@ public class ItemUtil {
 
     /**
      * @param material The material of the returned ItemStack
+     * @param amount The amount of items in the ItemStack
      * @param displayName The displayName of the returned ItemStack
      * @param enchantments The enchantments, the item should have
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, Component displayName, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
-        ItemStack item = new ItemStack(material);
+    public static ItemStack createItem(Material material, int amount, Component displayName, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+        ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
         meta.displayName(displayName);
