@@ -17,19 +17,16 @@ public class GameStartCountdown extends Countdown {
     @Override
     protected void runTasks() {
         if(arena.getPlayers().size() >= 5){
-            switch (seconds){
-                case 60: case 50: case 40: case 30: case 20: case 10: case 5: case 3: case 2:
-                    arena.broadcast(Component.text("Das Spiel startet in " + seconds + " Sekunden!"));
-                    break;
-                case 1:
-                    arena.broadcast(Component.text("Das Spiel startet in einer Sekunde!"));
-                    break;
-                case 0:
+            switch (seconds) {
+                case 60, 50, 40, 30, 20, 10, 5, 3, 2 ->
+                        arena.broadcast(Component.text("Das Spiel startet in " + seconds + " Sekunden!"));
+                case 1 -> arena.broadcast(Component.text("Das Spiel startet in einer Sekunde!"));
+                case 0 -> {
                     arena.setState(GameState.INGAME);
                     //Init inGame-phase
                     arena.updateArena();
                     stop();
-                    break;
+                }
             }
         }else{
             if(seconds <= startSeconds){
