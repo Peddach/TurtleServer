@@ -27,11 +27,20 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         SQLDatabase.connect();
 
         //Create necessary tables is the database
+        SQLDatabase.deleteRemainingData();
         SQLDatabase.createArenasTable();
         SQLDatabase.createJoiningPlayersTable();
 
         MultiverseCore mvCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
         worldManager = mvCore.getMVWorldManager();
+    }
+
+    @Override
+    protected void runOnDisableTasks() {
+        for(Arena arena : arenas){
+            arena.deleteArena();
+        }
+        SQLDatabase.disconnect();
     }
 
     /**

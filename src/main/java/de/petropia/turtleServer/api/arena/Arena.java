@@ -13,11 +13,10 @@ import java.util.Random;
 
 public abstract class Arena {
 
-    protected final String name;
+    private final String name;
     protected final World world;
-    protected final List<Player> players = new ArrayList<>();
-
-    protected GameState state;
+    private final List<Player> players = new ArrayList<>();
+    private GameState state;
 
     public Arena() {
         name = getRandomName();
@@ -34,8 +33,19 @@ public abstract class Arena {
     protected abstract World setWorld();
     protected abstract void init();
 
+    /**
+     * Updates the arena in the database
+     */
     public void updateArena(){
         PetropiaMinigame.getPlugin().getSQLDatabase().updateArena(this);
+    }
+
+    /**
+     * Deletes the arena in the database
+     */
+    public void deleteArena(){
+        PetropiaMinigame.getPlugin().getWorldManager().deleteWorld(world.getName());
+        PetropiaMinigame.getPlugin().getSQLDatabase().deleteArena(this);
     }
 
     /**
@@ -60,6 +70,10 @@ public abstract class Arena {
 
     public String getName() {
         return name;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public List<Player> getPlayers() {
