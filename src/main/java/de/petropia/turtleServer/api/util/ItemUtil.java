@@ -56,4 +56,48 @@ public class ItemUtil {
         return item;
     }
 
+    /**
+     * @param material The material of the returned ItemStack
+     * @param enchantments The enchantments, the item should have
+     * @param lore The content of the item-lore of the returned ItemStack
+     * @return an ItemStack
+     */
+    public static ItemStack createItem(Material material, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+        ItemStack item = new ItemStack(material);
+
+        ItemMeta meta = item.getItemMeta();
+        meta.lore(List.of(lore));
+
+        for(Enchantment enchantment : enchantments){
+            meta.addEnchant(enchantment, enchantmentLevel, true);
+        }
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    /**
+     * @param material The material of the returned ItemStack
+     * @param displayName The displayName of the returned ItemStack
+     * @param enchantments The enchantments, the item should have
+     * @param lore The content of the item-lore of the returned ItemStack
+     * @return an ItemStack
+     */
+    public static ItemStack createItem(Material material, Component displayName, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+        ItemStack item = new ItemStack(material);
+
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(displayName);
+        meta.lore(List.of(lore));
+
+        for(Enchantment enchantment : enchantments){
+            meta.addEnchant(enchantment, enchantmentLevel, true);
+        }
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
 }

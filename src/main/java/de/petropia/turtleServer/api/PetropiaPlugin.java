@@ -1,15 +1,26 @@
 package de.petropia.turtleServer.api;
 
 import de.petropia.turtleServer.api.util.MessageUtil;
+import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class PetropiaPlugin extends JavaPlugin {
 
-    //Create Message sender instance specific for the plugin
     private final MessageUtil messageUtil = new MessageUtil(this);
+    private final CloudNetAdapter cloudNetAdapter = new CloudNetAdapter();
+
+    @Override
+    public void onEnable() {
+
+    }
+
+    @Override
+    public void onDisable() {
+
+    }
 
     /**
-     * @deprecated Only for allready intedrated plugins. Use {@link PetropiaPlugin#getMessageUtil()} instead
+     * @deprecated Only for already integrated plugins. Use {@link PetropiaPlugin#getMessageUtil()} instead
      * @return current instance for Plugin
      */
     @Deprecated
@@ -17,10 +28,11 @@ public abstract class PetropiaPlugin extends JavaPlugin {
         return messageUtil;
     }
 
-    /**
-     * @return Current instance if MessageUtil
-     */
     public MessageUtil getMessageUtil(){
         return messageUtil;
+    }
+
+    public CloudNetAdapter getCloudNetAdapter() {
+        return cloudNetAdapter;
     }
 }

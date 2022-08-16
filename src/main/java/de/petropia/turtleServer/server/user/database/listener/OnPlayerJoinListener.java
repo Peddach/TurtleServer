@@ -33,7 +33,7 @@ public class OnPlayerJoinListener implements Listener {
                 player.updateSkinTextureSignature(profileProperty.getSignature());
                 break;
             }
-            player.updateServer(TurtleServer.getCloudNetAdapter().getServerInstanceName()); //Update Server
+            player.updateServer(TurtleServer.getInstance().getCloudNetAdapter().getServerInstanceName()); //Update Server
             player.updateOnline(true); //Set player online
             player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));
             return;
@@ -48,7 +48,7 @@ public class OnPlayerJoinListener implements Listener {
             }
         }
         player.updateOnline(true);  //Online status
-        player.updateServer(TurtleServer.getCloudNetAdapter().getServerInstanceName()); //servername
+        player.updateServer(TurtleServer.getInstance().getCloudNetAdapter().getServerInstanceName()); //servername
         player.updateLastOnline((int) Instant.now().getEpochSecond());  //current time as last logout 'cause can't predict when player is going to logout
         player.updateUserName(event.getName()); //Add username
         player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));

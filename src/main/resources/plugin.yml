@@ -1,6 +1,6 @@
 name: TurtleServer
 main: de.petropia.turtleServer.server.TurtleServer
-author: Professor_Sam
+authors: [Professor_Sam, Jetztmachtsbumm]
 version: ${project.version}
 description: "Core system of petropia.de"
 depend:
