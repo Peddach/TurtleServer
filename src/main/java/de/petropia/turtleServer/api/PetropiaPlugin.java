@@ -11,37 +11,13 @@ public abstract class PetropiaPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        runOnEnableTasks();
 
-        registerListeners();
-
-        registerCommands();
     }
 
     @Override
     public void onDisable() {
-        runOnDisableTasks();
+
     }
-
-    /**
-     * Runs all tasks, that should be executed in the onEnable()
-     */
-    protected abstract void runOnEnableTasks();
-
-    /**
-     * Runs all tasks, that should be executed in the onDisable()
-     */
-    protected abstract void runOnDisableTasks();
-
-    /**
-     * Registers all event listeners
-     */
-    protected abstract void registerListeners();
-
-    /**
-     * Registers all commands
-     */
-    protected abstract void registerCommands();
 
     /**
      * @deprecated Only for already integrated plugins. Use {@link PetropiaPlugin#getMessageUtil()} instead

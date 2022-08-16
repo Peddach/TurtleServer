@@ -19,7 +19,8 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
     private MVWorldManager worldManager;
 
     @Override
-    protected void runOnEnableTasks() {
+    public void onEnable() {
+        super.onEnable();
         plugin = setPlugin();
 
         createConfigData();
@@ -36,7 +37,8 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
     }
 
     @Override
-    protected void runOnDisableTasks() {
+    public void onDisable() {
+        super.onDisable();
         for(Arena arena : arenas){
             arena.deleteArena();
         }

@@ -27,28 +27,30 @@ public class TurtleServer extends PetropiaPlugin {
     }
 
     @Override
-    protected void runOnEnableTasks() {
+    public void onEnable() {
+        super.onEnable();
         plugin = this;
         saveDefaultConfig();    //save default config
         saveConfig();
         reloadConfig();
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
+
+        registerListeners();
+        registerCommands();
     }
 
     @Override
-    protected void runOnDisableTasks() {
-
+    public void onDisable() {
+        super.onDisable();
     }
 
-    @Override
-    protected void registerCommands() {
+    private void registerCommands() {
         this.getCommand("player").setExecutor(new PlayerCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
-    @Override
-    protected void registerListeners() {
+    private void registerListeners() {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(new AsyncChatListener(), this);
         manager.registerEvents(new PlayerJoinListener(), this);
