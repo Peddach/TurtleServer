@@ -144,13 +144,13 @@ public class ItemUtil {
     /**
      * @param potionType The type of the potion
      * @param amount The amount of potions in the ItemStack
+     * @param displayName The displayName of the potion
      * @param splash if {@code true}, creates a splash potion instead of a normal one
      * @param enchanted if {@code true}: adds enchantment glow to the potion
-     * @param displayName The displayName of the potion
      * @param lore The content of the item-lore of the potion
      * @return A potion ItemStack
      */
-    public static ItemStack createPotion(PotionType potionType, int amount, boolean splash, boolean enchanted, Component displayName, Component... lore){
+    public static ItemStack createPotion(PotionType potionType, int amount, Component displayName, boolean splash, boolean enchanted, Component... lore){
         ItemStack potion;
 
         if(splash){
