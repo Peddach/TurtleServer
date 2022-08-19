@@ -2,9 +2,12 @@ package de.petropia.turtleServer.api.arena.gamestate;
 
 public enum GameState {
 
-    //Standart states
+    //Standard states
     STARTING,
     INGAME,
-    ENDING
+    ENDING,
+
+    //DeadByDaylight states
+    DBD_KIT_VOTING
 
 }

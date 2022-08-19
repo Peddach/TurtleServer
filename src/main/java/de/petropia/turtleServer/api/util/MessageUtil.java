@@ -5,6 +5,7 @@ import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,22 +29,23 @@ public class MessageUtil {
     }
 
     /**
-     * Send a message to a player in right format with prefix
-     * @param player Player who should receive the message
-     * @param message The message as Component
-     */
-    public void sendMessage(@NotNull Player player, @NotNull Component message){
-        player.sendMessage(prefix.append(message));
-    }
-
-    /**
      * Broadcast a message to an audience.
      * @see Audience#audience(Audience...)
      * @param audience Audience to broadcast to
      * @param message Message to send to the audience
      */
-    public void broadcastMessage(@NotNull Audience audience, @NotNull Component message) {
+    public void sendMessage(@NotNull Audience audience, @NotNull Component message) {
         audience.sendMessage(prefix.append(message));
+    }
+
+    /**
+     * Sends a title to a player
+     * @param audience The player(s), that should receive the title
+     * @param title The main title
+     * @param subTitle The subtitle (below the main title)
+     */
+    public void sendTitle(Audience audience, Component title, Component subTitle){
+        audience.showTitle(Title.title(title, subTitle));
     }
 
     /**

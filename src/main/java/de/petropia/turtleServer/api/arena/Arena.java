@@ -46,6 +46,7 @@ public abstract class Arena {
     public void deleteArena(){
         PetropiaMinigame.getPlugin().getWorldManager().deleteWorld(world.getName());
         PetropiaMinigame.getPlugin().getSQLDatabase().deleteArena(this);
+        PetropiaMinigame.getPlugin().getArenas().remove(this);
     }
 
     /**
@@ -53,7 +54,7 @@ public abstract class Arena {
      * @param message The message, that should be sent
      */
     public void broadcast(Component message){
-        PetropiaMinigame.getPlugin().getMessageUtil().broadcastMessage(Audience.audience(players), message);
+        PetropiaMinigame.getPlugin().getMessageUtil().sendMessage(Audience.audience(players), message);
     }
 
     /**
