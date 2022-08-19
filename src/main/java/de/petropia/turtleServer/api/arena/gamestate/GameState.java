@@ -8,6 +8,6 @@ public enum GameState {
     ENDING,
 
     //DeadByDaylight states
-    DBD_KIT_VOTING
+    DBD_KIT_CHOOSING
 
 }
