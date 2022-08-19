@@ -16,6 +16,7 @@ public class GameStartCountdown extends Countdown {
 
     @Override
     protected void runTasks() {
+        super.runTasks();
         if(arena.getPlayers().size() >= 5){
             switch (seconds) {
                 case 60, 50, 40, 30, 20, 10, 5, 3, 2 ->
@@ -24,7 +25,6 @@ public class GameStartCountdown extends Countdown {
                 case 0 -> {
                     arena.setState(GameState.INGAME);
                     arena.updateArena();
-                    stop();
                 }
             }
         }else{

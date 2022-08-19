@@ -14,7 +14,7 @@ public abstract class Countdown {
      * @param startSeconds The amount of seconds, that the countdown starts with
      * @param async if {@code true}: runs the task asynchronously
      */
-    public Countdown(int startSeconds, boolean async) {
+    protected Countdown(int startSeconds, boolean async) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
         if(async) {
@@ -34,7 +34,7 @@ public abstract class Countdown {
      * Tells bukkit to schedule a task, that repeats every second
      * @param startSeconds The amount of seconds, that the countdown starts with
      */
-    public Countdown(int startSeconds) {
+    protected Countdown(int startSeconds) {
         this.startSeconds = startSeconds;
         seconds = startSeconds;
         taskID = PetropiaMinigame.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaMinigame.getPlugin(), () -> {
@@ -46,12 +46,16 @@ public abstract class Countdown {
     /**
      * Gets executed every second
      */
-    protected abstract void runTasks();
+    protected void runTasks(){
+        if(seconds <= 0){
+            stop();
+        }
+    }
 
     /**
      * Stops the countdown
      */
-    protected void stop(){
+    private void stop(){
         Bukkit.getScheduler().cancelTask(taskID);
     }
 }
