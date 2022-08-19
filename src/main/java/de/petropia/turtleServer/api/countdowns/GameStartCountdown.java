@@ -17,7 +17,7 @@ public class GameStartCountdown extends Countdown {
     @Override
     protected void runTasks() {
         super.runTasks();
-        if(arena.getPlayers().size() >= 5){
+        if(arena.getPlayers().size() >= PetropiaMinigame.getPlugin().getRequiredPlayersForStart()){
             switch (seconds) {
                 case 60, 50, 40, 30, 20, 10, 5, 3, 2 ->
                         arena.broadcast(Component.text("Das Spiel startet in " + seconds + " Sekunden!"));

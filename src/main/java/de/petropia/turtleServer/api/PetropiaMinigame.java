@@ -18,6 +18,7 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
     private final Hashtable<Player, Arena> playerArenas = new Hashtable<>();
 
     private int maxPlayers;
+    private int requiredPlayersForStart;
     private MVWorldManager worldManager;
 
     @Override
@@ -29,6 +30,8 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         createConfigData();
 
         maxPlayers = getConfig().getInt("MaxPlayers");
+        requiredPlayersForStart = getConfig().getInt("RequiredPlayersForStart");
+
 
         SQLDatabase.connect();
 
@@ -80,6 +83,9 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         if(!getConfig().contains("MaxPlayers")){
             getConfig().set("MaxPlayers", 1);
         }
+        if(!getConfig().contains("RequiredPlayersForStart")){
+            getConfig().set("RequiredPlayersForStart", 1);
+        }
 
         saveConfig();
     }
@@ -92,6 +98,10 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public int getRequiredPlayersForStart() {
+        return requiredPlayersForStart;
     }
 
     public de.petropia.turtleServer.api.mysql.SQLDatabase getSQLDatabase() {
