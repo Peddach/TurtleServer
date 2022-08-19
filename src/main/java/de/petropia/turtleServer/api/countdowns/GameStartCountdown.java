@@ -23,8 +23,7 @@ public class GameStartCountdown extends Countdown {
                         arena.broadcast(Component.text("Das Spiel startet in " + seconds + " Sekunden!"));
                 case 1 -> arena.broadcast(Component.text("Das Spiel startet in einer Sekunde!"));
                 case 0 -> {
-                    arena.setState(GameState.INGAME);
-                    arena.updateArena();
+                    arena.startGame();
                 }
             }
         }else{

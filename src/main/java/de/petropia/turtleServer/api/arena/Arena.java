@@ -28,9 +28,14 @@ public abstract class Arena {
     }
 
     /**
+     * Starts the game
+     */
+    public abstract void startGame();
+    /**
      * Sets the world of the arena. Is implemented in the child class
      */
     protected abstract World setWorld();
+    //Initializes the arena
     protected abstract void init();
 
     /**
