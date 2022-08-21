@@ -44,8 +44,19 @@ public class MessageUtil {
      * @param title The main title
      * @param subTitle The subtitle (below the main title)
      */
-    public void sendTitle(Audience audience, Component title, Component subTitle){
+    public void sendTitle(@NotNull Audience audience, Component title, Component subTitle){
         audience.showTitle(Title.title(title, subTitle));
+    }
+
+    /**
+     * Broadcast a message to an audience
+     * @deprecated use {@link MessageUtil#sendMessage(Audience, Component)} instead
+     * @param audience Audience to broadcast to
+     * @param message Message to send to the audience
+     */
+    @Deprecated(forRemoval = true)
+    public void broadcastMessage(@NotNull Audience audience, @NotNull Component message) {
+        audience.sendMessage(prefix.append(message));
     }
 
     /**
