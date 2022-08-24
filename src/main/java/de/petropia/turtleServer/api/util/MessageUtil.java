@@ -38,6 +38,10 @@ public class MessageUtil {
         audience.sendMessage(prefix.append(message));
     }
 
+    public void sendMessage(Player player, Component message){
+        player.sendMessage(prefix.append(message));
+    }
+
     /**
      * Sends a title to a player
      * @param audience The player(s), that should receive the title
