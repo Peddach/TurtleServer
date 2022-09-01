@@ -177,7 +177,7 @@ public class ItemUtil {
         return potion;
     }
 
-    public ItemStack[] createLeatherArmor(Color color, boolean enchanted){
+    public static ItemStack[] createLeatherArmor(Color color, boolean enchanted){
         ItemStack[] armor = new ItemStack[4];
 
         armor[0] = createItem(Material.LEATHER_HELMET, 1, enchanted);
@@ -194,7 +194,7 @@ public class ItemUtil {
         return armor;
     }
 
-    public ItemStack[] createLeatherArmor(Color color, int enchantmentLevel, Enchantment... enchantments){
+    public static ItemStack[] createLeatherArmor(Color color, int enchantmentLevel, Enchantment... enchantments){
         ItemStack[] armor = new ItemStack[4];
 
         armor[0] = createItem(Material.LEATHER_HELMET, 1, enchantments, enchantmentLevel);
