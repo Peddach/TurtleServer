@@ -1,11 +1,13 @@
 package de.petropia.turtleServer.api.util;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
@@ -175,4 +177,37 @@ public class ItemUtil {
         return potion;
     }
 
+    public static ItemStack[] createLeatherArmor(Color color, boolean enchanted){
+        ItemStack[] armor = new ItemStack[4];
+
+        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchanted);
+        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchanted);
+        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchanted);
+        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchanted);
+
+        for(ItemStack itemStack : armor) {
+            LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
+            meta.setColor(color);
+            itemStack.setItemMeta(meta);
+        }
+
+        return armor;
+    }
+
+    public static ItemStack[] createLeatherArmor(Color color, int enchantmentLevel, Enchantment... enchantments){
+        ItemStack[] armor = new ItemStack[4];
+
+        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchantments, enchantmentLevel);
+        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchantments, enchantmentLevel);
+        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchantments, enchantmentLevel);
+        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchantments, enchantmentLevel);
+
+        for(ItemStack itemStack : armor) {
+            LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
+            meta.setColor(color);
+            itemStack.setItemMeta(meta);
+        }
+
+        return armor;
+    }
 }
