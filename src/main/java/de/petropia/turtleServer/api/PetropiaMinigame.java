@@ -32,9 +32,6 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         maxPlayers = getConfig().getInt("MaxPlayers");
         requiredPlayersForStart = getConfig().getInt("RequiredPlayersForStart");
 
-
-        SQLDatabase.connect();
-
         //Create necessary tables is the database
         SQLDatabase.deleteRemainingData();
         SQLDatabase.createArenasTable();
@@ -50,7 +47,6 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         for(Arena arena : arenas){
             arena.deleteArena();
         }
-        SQLDatabase.disconnect();
     }
 
     /**
