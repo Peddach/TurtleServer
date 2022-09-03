@@ -73,8 +73,7 @@ public class SQLDatabase {
         if(plugin instanceof PetropiaMinigame minigame) {
             if (!minigame.getArenas().contains(arena)) {
                 Bukkit.getScheduler().runTaskAsynchronously(minigame, () -> {
-                    try(Connection con = getConnection()){
-                        PreparedStatement st = con.prepareStatement("INSERT INTO arenas (server, name, state, playerCount) VALUES (?,?,?,?)");
+                    try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("INSERT INTO arenas (server, name, state, playerCount) VALUES (?,?,?,?)")){
                         st.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
                         st.setString(2, arena.getName());
                         st.setString(3, arena.getState().toString());
@@ -86,8 +85,7 @@ public class SQLDatabase {
                 });
             } else {
                 Bukkit.getScheduler().runTaskAsynchronously(minigame, () -> {
-                    try(Connection con = getConnection()){
-                        PreparedStatement st = con.prepareStatement("UPDATE arenas SET server = ?, state = ?, playerCount = ? WHERE name = ?");
+                    try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("UPDATE arenas SET server = ?, state = ?, playerCount = ? WHERE name = ?")){
                         st.setString(4, arena.getName());
                         st.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
                         st.setString(2, arena.getState().toString());
@@ -106,8 +104,7 @@ public class SQLDatabase {
      * @param arena the arena to delete
      */
     public void deleteArena(Arena arena){
-        try(Connection con = getConnection()){
-            PreparedStatement st = con.prepareStatement("DELETE FROM arenas WHERE server = ? AND name = ?");
+        try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("DELETE FROM arenas WHERE server = ? AND name = ?")){
             st.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
             st.setString(2, arena.getName());
             st.executeUpdate();
@@ -122,8 +119,7 @@ public class SQLDatabase {
      * @return The arena that the joining player should be put in
      */
     public Arena getJoiningPlayerArena(PetropiaMinigame minigame, Player player){
-        try(Connection con = getConnection()){
-            PreparedStatement st = con.prepareStatement("SELECT arena FROM joiningPlayers WHERE server = ? AND name = ?");
+        try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("SELECT arena FROM joiningPlayers WHERE server = ? AND name = ?")){
             st.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
             st.setString(2, player.getName());
             ResultSet rs = st.executeQuery();
@@ -158,8 +154,7 @@ public class SQLDatabase {
 
             plugin.getMessageUtil().sendMessage(player, Component.text("Connecting..."));
 
-            try(Connection con = getConnection()){
-                PreparedStatement st = con.prepareStatement("INSERT INTO joiningPlayers (server, name, arena) VALUES (?, ?, ?)");
+            try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("INSERT INTO joiningPlayers (server, name, arena) VALUES (?, ?, ?)");){
                 st.setString(1, arenaServer);
                 st.setString(2, player.getName());
                 st.setString(3, arenaName);
@@ -178,8 +173,7 @@ public class SQLDatabase {
      */
     public void removeJoiningPlayer(Player player){
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try(Connection con = getConnection()){
-                PreparedStatement st = con.prepareStatement("DELETE FROM joiningPlayers WHERE name = ?");
+            try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("DELETE FROM joiningPlayers WHERE name = ?")){
                 st.setString(1, player.getName());
                 st.executeUpdate();
             } catch (SQLException ex) {
@@ -192,9 +186,9 @@ public class SQLDatabase {
      * Deletes remaining data, that might not have been deleted, when the server was closed
      */
     public void deleteRemainingData(){
-        try(Connection con = getConnection()){
+        try(Connection con = getConnection();
             PreparedStatement st1 = con.prepareStatement("DELETE FROM arenas WHERE server = ?");
-            PreparedStatement st2 = con.prepareStatement("DELETE FROM joiningPlayers WHERE server = ?");
+            PreparedStatement st2 = con.prepareStatement("DELETE FROM joiningPlayers WHERE server = ?")){
 
             st1.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
             st2.setString(1, plugin.getCloudNetAdapter().getServerInstanceName());
@@ -215,9 +209,7 @@ public class SQLDatabase {
         List<String[]> arenaDataArrays = new ArrayList<>();
 
         //Get Arenas from database
-        try(Connection con = getConnection()){
-            PreparedStatement st = con.prepareStatement("SELECT * FROM arenas");
-            ResultSet rs = st.executeQuery();
+        try(Connection con = getConnection(); PreparedStatement st = con.prepareStatement("SELECT * FROM arenas"); ResultSet rs = st.executeQuery()){
             while (rs.next()){
                 String[] arenaData = new String[4];
                 arenaData[0] = rs.getString("server");
