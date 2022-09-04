@@ -48,8 +48,16 @@ public abstract class Countdown {
      */
     protected void runTasks(){
         if(seconds <= 0){
+            onCountdownStop();
             stop();
         }
+    }
+
+    /**
+     * Executed, when the countdown stops
+     */
+    protected void onCountdownStop(){
+
     }
 
     /**
