@@ -1,7 +1,9 @@
 package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
+import de.petropia.turtleServer.server.commandBlocker.CommandBlocker;
 import de.petropia.turtleServer.server.commands.PlayerCommand;
+import de.petropia.turtleServer.server.commands.TurtleCommand;
 import de.petropia.turtleServer.server.prefix.PrefixManager;
 import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
 import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListener;
@@ -35,6 +37,7 @@ public class TurtleServer extends PetropiaPlugin {
         reloadConfig();
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
+        CommandBlocker.loadCommandBlockList();
 
         registerListeners();
         registerCommands();
@@ -47,6 +50,7 @@ public class TurtleServer extends PetropiaPlugin {
 
     private void registerCommands() {
         this.getCommand("player").setExecutor(new PlayerCommand());
+        this.getCommand("turtle").setExecutor(new TurtleCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
@@ -56,6 +60,7 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new PlayerJoinListener(), this);
         manager.registerEvents(new PlayerLeaveListener(), this);
         manager.registerEvents(new OnPlayerJoinListener(), this);
+        manager.registerEvents(new CommandBlocker(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
