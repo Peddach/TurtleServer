@@ -9,6 +9,12 @@ api-version: 1.19
 commands:
   player:
     description: Manage player cache and player info
+  turtle:
+    description: "Access turtleServer internals"
 permissions:
   TurtleServer.debug:
     description: "Allow player to see debug message"
+  TurtleServer.command:
+    description: "Use command to access TurtleServer internals"
+  TurtleServer.bypass.commandblock:
+    description: "Bypass command ristriction"

@@ -6,3 +6,5 @@ Database:
   Password: password
   Hostname: 127.0.0.1
   Port: 27017
+BlockedCommands:
+  - "plugins;jajajaja"
