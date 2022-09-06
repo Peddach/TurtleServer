@@ -28,8 +28,11 @@ public class ChatInputListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
+        ChatInput chatInput = INPUT_HASH_MAP.get(event.getPlayer());
+        if(chatInput != null){
+            chatInput.input("Abbrechen");
+        }
         unregisterChatinput(event.getPlayer());
-        INPUT_HASH_MAP.get(event.getPlayer()).input("Abbrechen");
     }
 
     /**
