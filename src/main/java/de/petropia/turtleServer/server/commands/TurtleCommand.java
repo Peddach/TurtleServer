@@ -23,10 +23,11 @@ public class TurtleCommand implements CommandExecutor {
         if (args.length == 0) {
             TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Es gibt folgende Subcommands: BlockedCommands"));
         }
-        if(args[0].equalsIgnoreCase("blockedCommands")){
-            for(String cmd : CommandBlocker.getBlockedCommands().keySet()){
+        if (args[0].equalsIgnoreCase("blockedCommands")) {
+            for (String cmd : CommandBlocker.getBlockedCommands().keySet()) {
                 TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text(cmd).color(NamedTextColor.GRAY));
             }
+            return true;
         }
         return false;
     }

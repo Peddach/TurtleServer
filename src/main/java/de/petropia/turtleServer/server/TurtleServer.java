@@ -1,6 +1,7 @@
 package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
+import de.petropia.turtleServer.api.chatInput.ChatInputListener;
 import de.petropia.turtleServer.server.commandBlocker.CommandBlocker;
 import de.petropia.turtleServer.server.commands.PlayerCommand;
 import de.petropia.turtleServer.server.commands.TurtleCommand;
@@ -61,6 +62,7 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new PlayerLeaveListener(), this);
         manager.registerEvents(new OnPlayerJoinListener(), this);
         manager.registerEvents(new CommandBlocker(), this);
+        manager.registerEvents(new ChatInputListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
