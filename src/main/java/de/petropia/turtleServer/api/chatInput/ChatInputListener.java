@@ -1,10 +1,14 @@
 package de.petropia.turtleServer.api.chatInput;
 
+import de.petropia.turtleServer.server.TurtleServer;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
@@ -33,6 +37,15 @@ public class ChatInputListener implements Listener {
             chatInput.input("Abbrechen");
         }
         unregisterChatinput(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event){
+        if(!INPUT_HASH_MAP.containsKey(event.getPlayer())){
+            return;
+        }
+        event.setCancelled(true);
+        TurtleServer.getInstance().getMessageUtil().sendMessage(event.getPlayer(), Component.text("Bitte erfülle erst die Chateingabe!").color(NamedTextColor.DARK_RED));
     }
 
     /**
