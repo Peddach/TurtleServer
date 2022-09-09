@@ -35,12 +35,7 @@ public abstract class Countdown {
      * @param startSeconds The amount of seconds, that the countdown starts with
      */
     protected Countdown(int startSeconds) {
-        this.startSeconds = startSeconds;
-        seconds = startSeconds;
-        taskID = PetropiaMinigame.getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(PetropiaMinigame.getPlugin(), () -> {
-            runTasks();
-            seconds--;
-        },0,20);
+        this(startSeconds, false);
     }
 
     /**
