@@ -38,7 +38,7 @@ public class OnPlayerJoinListener implements Listener {
             player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));
             return;
         }
-        player = new PetropiaPlayer();  //Player not in db -> Create an init the player
+        player = new PetropiaPlayer();  //Player not in db -> Create and init the player
         player.setUuid(event.getUniqueId().toString()); //UUID
         for (ProfileProperty profileProperty : event.getPlayerProfile().getProperties()) {  //Skin stuff
             if (profileProperty.getName().equalsIgnoreCase("textures")) {
@@ -48,8 +48,9 @@ public class OnPlayerJoinListener implements Listener {
             }
         }
         player.updateOnline(true);  //Online status
-        player.updateServer(TurtleServer.getInstance().getCloudNetAdapter().getServerInstanceName()); //servername
-        player.updateLastOnline((int) Instant.now().getEpochSecond());  //current time as last logout 'cause can't predict when player is going to logout
+        player.updateFriendJoinMessage(true); //By default, every player should get a message when a friend joins
+        player.updateServer(TurtleServer.getInstance().getCloudNetAdapter().getServerInstanceName()); //server name
+        player.updateLastOnline((int) Instant.now().getEpochSecond());  //current time as last logout 'cause can't predict when player is going to log out
         player.updateUserName(event.getName()); //Add username
         player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));
     }
