@@ -12,9 +12,15 @@ import de.petropia.turtleServer.server.prefix.listener.PlayerJoinListener;
 import de.petropia.turtleServer.server.prefix.listener.PlayerLeaveListener;
 import de.petropia.turtleServer.server.user.database.MongoDBHandler;
 import de.petropia.turtleServer.server.user.database.listener.OnPlayerJoinListener;
+import de.petropia.turtleServer.server.user.database.listener.ServerShutdownListener;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitTask;
 
 public class TurtleServer extends PetropiaPlugin {
 
@@ -63,8 +69,24 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new OnPlayerJoinListener(), this);
         manager.registerEvents(new CommandBlocker(), this);
         manager.registerEvents(new ChatInputListener(), this);
+        manager.registerEvents(new ServerShutdownListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
+    }
+
+    /**
+     * Shuts down the server properly. You may not call {@link Bukkit#shutdown()}, because player data would not be saved properly
+     */
+    public void shutdownServer(){
+        ServerShutdownListener.lockServer();
+        for(Player player : Bukkit.getServer().getOnlinePlayers()){
+            player.kick(Component.text("Der Server auf dem du dich befunden hast wurde gestoppt!").color(NamedTextColor.RED));
+        }
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            getLogger().warning("PetropiaPlayer data saved! Cache:" + mongoDBHandler.getChachedPlayers().size());
+            Bukkit.getServer().shutdown();
+        }, 30);
+
     }
 
     public static TurtleServer getInstance() {
