@@ -22,6 +22,7 @@ public class PetropiaPlayer {
     private boolean online;
     private String server;
     private int lastOnline;
+    private boolean friendJoinMessage;
     @Property(value = "name_history")
     private List<String> nameHistory = new ArrayList<>();
 
@@ -161,6 +162,18 @@ public class PetropiaPlayer {
      */
     public void updateSkinTextureSignature(String skinTextureSignature) {
         this.skinTextureSignature = skinTextureSignature;
+    }
+
+    /**
+     * Set if a playersould recive a message when a friend connect to the server
+     * @param sendMessage true if message sould be sended
+     */
+    public void updateFriendJoinMessage(boolean sendMessage){
+        this.friendJoinMessage = sendMessage;
+    }
+
+    public boolean isFriendJoinMessageEnabled(){
+        return this.friendJoinMessage;
     }
 
     /**
