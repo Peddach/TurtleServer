@@ -8,9 +8,11 @@ depend:
 api-version: 1.19
 commands:
   player:
-    description: Manage player cache and player info
+    description: "Manage player cache and player info"
   turtle:
     description: "Access turtleServer internals"
+  stats:
+    description: "Show your stats"
 permissions:
   TurtleServer.debug:
     description: "Allow player to see debug message"
