@@ -26,7 +26,7 @@ public class PetropiaPlayer {
     private boolean friendJoinMessage;
     @Property(value = "name_history")
     private List<String> nameHistory = new ArrayList<>();
-    private HashMap<String, Double> stats;
+    private HashMap<String, Double> stats = new HashMap<>();
 
     /**
      * A PetropiaPlayer is a player profile for the petropia network.
@@ -172,6 +172,9 @@ public class PetropiaPlayer {
      * @return the value
      */
     public double getStats(String identifier){
+        if(stats.get(identifier) == null) {
+            return 0;
+        }
         return stats.get(identifier);
     }
 

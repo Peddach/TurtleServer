@@ -12,7 +12,6 @@ public class StatsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        TurtleServer.getInstance().getMessageUtil().showDebugMessage("Stats command executed");
         if(!(sender instanceof Player player)){
             return false;
         }
