@@ -194,6 +194,11 @@ public class PetropiaPlayer {
      * @param valueToIncrease the amout of which should be increased
      */
     public void increateStats(String identifier, double valueToIncrease){
+        if(stats.get(identifier) == null){
+            stats.put(identifier, valueToIncrease);
+            updatePlayer();
+            return;
+        }
         stats.put(identifier, stats.get(identifier) + valueToIncrease);
         updatePlayer();
     }
