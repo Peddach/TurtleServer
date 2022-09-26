@@ -5,6 +5,7 @@ import dev.morphia.annotations.*;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +26,7 @@ public class PetropiaPlayer {
     private boolean friendJoinMessage;
     @Property(value = "name_history")
     private List<String> nameHistory = new ArrayList<>();
+    private HashMap<String, Double> stats = new HashMap<>();
 
     /**
      * A PetropiaPlayer is a player profile for the petropia network.
@@ -162,6 +164,52 @@ public class PetropiaPlayer {
      */
     public void updateSkinTextureSignature(String skinTextureSignature) {
         this.skinTextureSignature = skinTextureSignature;
+    }
+
+    /**
+     * Get the value of a stats property
+     * @param identifier The unique identifier
+     * @return the value
+     */
+    public double getStats(String identifier){
+        if(stats.get(identifier) == null) {
+            return 0;
+        }
+        return stats.get(identifier);
+    }
+
+    /**
+     * Set a specific stats property
+     * @param identifier Unique identifier
+     * @param value The stats value
+     */
+    public void setStats(String identifier, double value){
+        stats.put(identifier, value);
+        updatePlayer();
+    }
+
+    /**
+     * Increase the value of a stats property
+     * @param identifier unique identifier
+     * @param valueToIncrease the amout of which should be increased
+     */
+    public void increateStats(String identifier, double valueToIncrease){
+        if(stats.get(identifier) == null){
+            stats.put(identifier, valueToIncrease);
+            updatePlayer();
+            return;
+        }
+        stats.put(identifier, stats.get(identifier) + valueToIncrease);
+        updatePlayer();
+    }
+
+    /**
+     * Internal use! Use the proper methods {@link PetropiaPlayer#increateStats(String, double)}, {@link PetropiaPlayer#setStats(String, double)} and {@link PetropiaPlayer#getStats(String)}
+     * to modify the stats
+     * @return HashMap with stats
+     */
+    public HashMap<String, Double> getStatsHashMap(){
+        return stats;
     }
 
     /**

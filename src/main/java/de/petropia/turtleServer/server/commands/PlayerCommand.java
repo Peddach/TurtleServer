@@ -78,6 +78,10 @@ public class PlayerCommand implements CommandExecutor, TabCompleter {
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("SERVER: " + petropiaPlayer.getServer()));
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("LAST ONLINE: " + TimeUtil.unixTimestampToString(petropiaPlayer.getLastOnline())));
         TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("HISTORY: " + nameHistoryAsString(petropiaPlayer)));
+        TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("STATS:"));
+        petropiaPlayer.getStatsHashMap().forEach((key, value) -> {
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text(key + " - " + value));
+        });
     }
 
     private String nameHistoryAsString(PetropiaPlayer petropiaPlayer) {
