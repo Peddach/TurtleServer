@@ -8,31 +8,39 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ServerShutdownListener implements Listener {
 
     private static boolean serverLocked = false;
+    private static final List<String> stopCommands = Arrays.asList("stop", "/stop", "restart", "/restart");
 
     @EventHandler
     public void onServerShutdownCommand(ServerCommandEvent event){
-        if(!(event.getCommand().equalsIgnoreCase("stop") || event.getCommand().equalsIgnoreCase("/stop"))){
-            return;
+        for(String stopCmd : stopCommands){
+            if(!event.getCommand().equalsIgnoreCase(stopCmd)){
+                continue;
+            }
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Shutdown hook triggered");
+            event.setCancelled(true);
+            TurtleServer.getInstance().shutdownServer();
         }
-        TurtleServer.getInstance().getMessageUtil().showDebugMessage("Shutdown hook triggered");
-        event.setCancelled(true);
-        TurtleServer.getInstance().shutdownServer();
     }
 
     @EventHandler
     public void onServerShutdownCommandByPlayer(PlayerCommandPreprocessEvent event){
-        if(!event.getPlayer().hasPermission(" TurtleServer.bypass.commandblock")){
+        if(!event.getPlayer().hasPermission("TurtleServer.bypass.commandblock")){
             return;
         }
-        if(!(event.getMessage().equalsIgnoreCase("stop") || event.getMessage().equalsIgnoreCase("/stop"))){
-            return;
+        for(String stopCmd : stopCommands){
+            if(!event.getMessage().equalsIgnoreCase(stopCmd)){
+                continue;
+            }
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Shutdown hook triggered");
+            event.setCancelled(true);
+            TurtleServer.getInstance().shutdownServer();
         }
-        TurtleServer.getInstance().getMessageUtil().showDebugMessage("Shutdown hook triggered");
-        event.setCancelled(true);
-        TurtleServer.getInstance().shutdownServer();
     }
 
     @EventHandler
