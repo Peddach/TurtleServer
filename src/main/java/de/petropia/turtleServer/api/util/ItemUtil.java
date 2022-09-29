@@ -24,7 +24,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, int amount, Component displayName, boolean enchanted, Component... lore){
+    public static ItemStack createItem(Material material, int amount, Component displayName, boolean enchanted, boolean unbreakable, Component... lore){
         ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
@@ -36,6 +36,8 @@ public class ItemUtil {
             meta.addEnchant(Enchantment.LUCK, 1, false);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
+
+        meta.setUnbreakable(unbreakable);
 
         item.setItemMeta(meta);
 
@@ -49,7 +51,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, int amount, boolean enchanted, Component... lore){
+    public static ItemStack createItem(Material material, int amount, boolean enchanted, boolean unbreakable, Component... lore){
         ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
@@ -59,6 +61,8 @@ public class ItemUtil {
             meta.addEnchant(Enchantment.LUCK, 1, false);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
+
+        meta.setUnbreakable(unbreakable);
 
         item.setItemMeta(meta);
 
@@ -72,7 +76,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, int amount, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+    public static ItemStack createItem(Material material, int amount, Enchantment[] enchantments, int enchantmentLevel, boolean unbreakable, Component... lore){
         ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
@@ -81,6 +85,8 @@ public class ItemUtil {
         for(Enchantment enchantment : enchantments){
             meta.addEnchant(enchantment, enchantmentLevel, true);
         }
+
+        meta.setUnbreakable(unbreakable);
 
         item.setItemMeta(meta);
 
@@ -95,7 +101,7 @@ public class ItemUtil {
      * @param lore The content of the item-lore of the returned ItemStack
      * @return an ItemStack
      */
-    public static ItemStack createItem(Material material, int amount, Component displayName, Enchantment[] enchantments, int enchantmentLevel, Component... lore){
+    public static ItemStack createItem(Material material, int amount, Component displayName, Enchantment[] enchantments, int enchantmentLevel, boolean unbreakable, Component... lore){
         ItemStack item = new ItemStack(material, amount);
 
         ItemMeta meta = item.getItemMeta();
@@ -105,6 +111,8 @@ public class ItemUtil {
         for(Enchantment enchantment : enchantments){
             meta.addEnchant(enchantment, enchantmentLevel, true);
         }
+
+        meta.setUnbreakable(unbreakable);
 
         item.setItemMeta(meta);
 
@@ -123,9 +131,9 @@ public class ItemUtil {
         ItemStack potion;
 
         if(splash){
-            potion = createItem(Material.SPLASH_POTION, amount, false, lore);
+            potion = createItem(Material.SPLASH_POTION, amount, false, false, lore);
         }else{
-            potion = createItem(Material.POTION, amount, false, lore);
+            potion = createItem(Material.POTION, amount, false, false, lore);
         }
 
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
@@ -156,9 +164,9 @@ public class ItemUtil {
         ItemStack potion;
 
         if(splash){
-            potion = createItem(Material.SPLASH_POTION, amount, false, lore);
+            potion = createItem(Material.SPLASH_POTION, amount, false, false, lore);
         }else{
-            potion = createItem(Material.POTION, amount, false, lore);
+            potion = createItem(Material.POTION, amount, false, false, lore);
         }
 
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
@@ -177,13 +185,13 @@ public class ItemUtil {
         return potion;
     }
 
-    public static ItemStack[] createLeatherArmor(Color color, boolean enchanted){
+    public static ItemStack[] createLeatherArmor(Color color, boolean enchanted, boolean unbreakable){
         ItemStack[] armor = new ItemStack[4];
 
-        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchanted);
-        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchanted);
-        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchanted);
-        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchanted);
+        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchanted, unbreakable);
+        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchanted, unbreakable);
+        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchanted, unbreakable);
+        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchanted, unbreakable);
 
         for(ItemStack itemStack : armor) {
             LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
@@ -194,13 +202,13 @@ public class ItemUtil {
         return armor;
     }
 
-    public static ItemStack[] createLeatherArmor(Color color, int enchantmentLevel, Enchantment... enchantments){
+    public static ItemStack[] createLeatherArmor(Color color, int enchantmentLevel, boolean unbreakable, Enchantment... enchantments){
         ItemStack[] armor = new ItemStack[4];
 
-        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchantments, enchantmentLevel);
-        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchantments, enchantmentLevel);
-        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchantments, enchantmentLevel);
-        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchantments, enchantmentLevel);
+        armor[0] = createItem(Material.LEATHER_HELMET, 1, enchantments, enchantmentLevel, unbreakable);
+        armor[1] = createItem(Material.LEATHER_CHESTPLATE, 1, enchantments, enchantmentLevel, unbreakable);
+        armor[2] = createItem(Material.LEATHER_LEGGINGS, 1, enchantments, enchantmentLevel, unbreakable);
+        armor[3] = createItem(Material.LEATHER_BOOTS, 1, enchantments, enchantmentLevel, unbreakable);
 
         for(ItemStack itemStack : armor) {
             LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
