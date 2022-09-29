@@ -43,7 +43,7 @@ public class StatsGui {
 
     private void fillInv() {
         if (petropiaPlayer == null) {
-            inventory.setItem(12, ItemUtil.createItem(Material.BARRIER, 1, Component.text("Kein Spieler gefunden").color(NamedTextColor.DARK_RED), false));
+            inventory.setItem(12, ItemUtil.createItem(Material.BARRIER, 1, Component.text("Kein Spieler gefunden").color(NamedTextColor.DARK_RED), false, false));
             return;
         }
         inventory.setItem(10, createGeneralItem());
