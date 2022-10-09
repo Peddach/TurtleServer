@@ -49,6 +49,9 @@ public abstract class Arena {
      * Deletes the arena in the database
      */
     public void deleteArena(){
+        for(Player player : players){
+            PetropiaMinigame.getPlugin().getCloudNetAdapter().sendPlayerToLobby(player);
+        }
         PetropiaMinigame.getPlugin().getWorldManager().deleteWorld(world.getName());
         PetropiaMinigame.getPlugin().getSQLDatabase().deleteArena(this);
         PetropiaMinigame.getPlugin().getArenas().remove(this);
