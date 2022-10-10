@@ -1,7 +1,7 @@
 package de.petropia.turtleServer.api.countdowns;
 
+import de.petropia.turtleServer.api.PetropiaMinigame;
 import de.petropia.turtleServer.api.arena.Arena;
-import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 
@@ -21,9 +21,9 @@ public class ShutdownArenaCountdown <T extends Arena> extends Countdown{
         super.runTasks();
         switch (seconds) {
             case 30, 20, 10, 5, 3, 2 ->
-                    TurtleServer.getInstance().getMessageUtil().sendMessage(Audience.audience(arena.getPlayers()), Component.text("Der Server startet in " + seconds + " Sekunden neu!"));
+                    PetropiaMinigame.getPlugin().getMessageUtil().sendMessage(Audience.audience(arena.getPlayers()), Component.text("Der Server startet in " + seconds + " Sekunden neu!"));
             case 1 ->
-                    TurtleServer.getInstance().getMessageUtil().sendMessage(Audience.audience(arena.getPlayers()), Component.text("Der Server startet in einer Sekunde neu!"));
+                    PetropiaMinigame.getPlugin().getMessageUtil().sendMessage(Audience.audience(arena.getPlayers()), Component.text("Der Server startet in einer Sekunde neu!"));
         }
     }
 
