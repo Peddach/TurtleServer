@@ -164,4 +164,8 @@ public class PrefixManager {
         return instance;
     }
 
+    public List<PrefixGroup> getPrefixGroups(){
+        return prefixGroups;
+    }
+
 }
