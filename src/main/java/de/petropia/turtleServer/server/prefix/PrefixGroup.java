@@ -22,6 +22,7 @@ public class PrefixGroup {
         this.name = name;
         this.team = PrefixManager.getInstance().getScoreboard().registerNewTeam(weight + name);
         this.team.displayName(prefix);
+        this.team.prefix(prefix);
     }
 
     /**
