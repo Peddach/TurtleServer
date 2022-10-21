@@ -95,6 +95,10 @@ public abstract class Arena {
         return state;
     }
 
+    public GameStartCountdown getGameStartCountdown() {
+        return gameStartCountdown;
+    }
+
     public void setState(GameState state) {
         this.state = state;
     }
