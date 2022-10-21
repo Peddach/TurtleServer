@@ -11,6 +11,7 @@ public class GameStartCountdown extends Countdown {
     public GameStartCountdown(Arena arena, int startSeconds) {
         super(startSeconds);
         this.arena = arena;
+        arena.setGameStartCountdown(this);
     }
 
     @Override
@@ -33,5 +34,9 @@ public class GameStartCountdown extends Countdown {
     @Override
     protected void onCountdownStop() {
         arena.startGame();
+    }
+
+    public void setSeconds(int seconds){
+        this.seconds = seconds;
     }
 }

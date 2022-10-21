@@ -2,6 +2,7 @@ package de.petropia.turtleServer.api.arena;
 
 import de.petropia.turtleServer.api.PetropiaMinigame;
 import de.petropia.turtleServer.api.arena.gamestate.GameState;
+import de.petropia.turtleServer.api.countdowns.GameStartCountdown;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
@@ -17,6 +18,7 @@ public abstract class Arena {
     protected final World world;
     private final List<Player> players = new ArrayList<>();
     private GameState state;
+    private GameStartCountdown gameStartCountdown;
 
     public Arena() {
         name = getRandomName();
@@ -95,5 +97,9 @@ public abstract class Arena {
 
     public void setState(GameState state) {
         this.state = state;
+    }
+
+    public void setGameStartCountdown(GameStartCountdown gameStartCountdown) {
+        this.gameStartCountdown = gameStartCountdown;
     }
 }
