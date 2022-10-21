@@ -34,6 +34,7 @@ public class GameStartCountdown extends Countdown {
     @Override
     protected void onCountdownStop() {
         arena.startGame();
+        arena.setGameStartCountdown(null);
     }
 
     public void setSeconds(int seconds){
