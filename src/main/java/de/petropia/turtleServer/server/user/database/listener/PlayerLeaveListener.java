@@ -34,6 +34,7 @@ public class PlayerLeaveListener implements Listener {
         }
         RECENT_LEFT.remove(event.getNetworkConnectionInfo().getUniqueId());
         TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.getNetworkConnectionInfo().getUniqueId().toString()).thenAccept(petropiaPlayer -> {
+            petropiaPlayer.increateStats("General_Playtime", (int) Instant.now().getEpochSecond() - petropiaPlayer.getLastOnline());
             petropiaPlayer.updateServer("null");
             petropiaPlayer.updateOnline(false);
             petropiaPlayer.updateLastOnline((int) Instant.now().getEpochSecond());

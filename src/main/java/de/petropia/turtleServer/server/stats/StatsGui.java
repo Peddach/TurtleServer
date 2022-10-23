@@ -1,6 +1,7 @@
 package de.petropia.turtleServer.server.stats;
 
 import de.petropia.turtleServer.api.util.ItemUtil;
+import de.petropia.turtleServer.api.util.TimeUtil;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
 import net.kyori.adventure.text.Component;
@@ -103,7 +104,7 @@ public class StatsGui {
     private ItemStack createDbDItem() {
         ItemStack item = new ItemStack(Material.CROSSBOW);
         item.editMeta(meta -> {
-            meta.displayName(Component.text("DeadByDaylight oder so").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+            meta.displayName(Component.text("Survive The Night").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             lore.add(Component.text("Punkte: ").color(NamedTextColor.GRAY).append(getStatsAsComponent("DbD_Points")));
@@ -120,7 +121,7 @@ public class StatsGui {
     private ItemStack createSurvivalItem() {
         ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
         item.editMeta(meta -> {
-            meta.displayName(Component.text("Survival").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+            meta.displayName(Component.text("Spacelife").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             lore.add(Component.text("Geld: ").color(NamedTextColor.GRAY).append(getStatsAsComponent("Survival_Money")));
@@ -137,7 +138,7 @@ public class StatsGui {
             meta.displayName(Component.text("Generelle Statistiken").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
-            lore.add(Component.text("Spielzeit: ").color(NamedTextColor.GRAY).append(getStatsAsComponent("General_Playtime")));
+            lore.add(Component.text("Spielzeit: ").color(NamedTextColor.GRAY).append(getOnlineTimeAsComponent()));
             lore.add(Component.empty());
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             meta.lore(lore);
@@ -154,5 +155,10 @@ public class StatsGui {
         String[] splitString = value.split("\\.");
         String valueWithoutPoint = splitString[0];
         return Component.text(valueWithoutPoint).color(NamedTextColor.YELLOW);
+    }
+
+    private Component getOnlineTimeAsComponent(){
+        int seconds = (int) petropiaPlayer.getStats("General_Playtime");
+        return Component.text(TimeUtil.formatSeconds(seconds)).color(NamedTextColor.YELLOW);
     }
 }
