@@ -1,8 +1,10 @@
 package de.petropia.turtleServer.server.user.database.listener;
 
 import com.destroystokyo.paper.profile.ProfileProperty;
+import de.dytanic.cloudnet.ext.bridge.bukkit.event.BukkitBridgeProxyPlayerLoginSuccessEvent;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -53,5 +55,12 @@ public class OnPlayerJoinListener implements Listener {
         player.updateLastOnline((int) Instant.now().getEpochSecond());  //current time as last logout 'cause can't predict when player is going to log out
         player.updateUserName(event.getName()); //Add username
         player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));
+    }
+
+    @EventHandler
+    public void onPlayerNetworkJoin(BukkitBridgeProxyPlayerLoginSuccessEvent event){
+        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.getNetworkConnectionInfo().getUniqueId().toString()).thenAccept(petropiaPlayer -> {
+            petropiaPlayer.updateLastOnline((int) Instant.now().getEpochSecond());
+        });
     }
 }
