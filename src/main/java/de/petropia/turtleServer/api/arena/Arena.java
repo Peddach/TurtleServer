@@ -44,7 +44,7 @@ public abstract class Arena {
      * Updates the arena in the database
      */
     public void updateArena(){
-        PetropiaMinigame.getPlugin().getSQLDatabase().updateArena(this);
+        PetropiaMinigame.getPlugin().getMinigameDatabase().updateArena(this);
     }
 
     /**
@@ -55,7 +55,7 @@ public abstract class Arena {
             PetropiaMinigame.getPlugin().getCloudNetAdapter().sendPlayerToLobby(player);
         }
         PetropiaMinigame.getPlugin().getWorldManager().deleteWorld(world.getName());
-        PetropiaMinigame.getPlugin().getSQLDatabase().deleteArena(this);
+        PetropiaMinigame.getPlugin().getMinigameDatabase().deleteArena(this);
         PetropiaMinigame.getPlugin().getArenas().remove(this);
     }
 

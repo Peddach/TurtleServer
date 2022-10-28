@@ -3,7 +3,7 @@ package de.petropia.turtleServer.api;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import de.petropia.turtleServer.api.arena.Arena;
-import de.petropia.turtleServer.api.mysql.SQLDatabase;
+import de.petropia.turtleServer.api.mysql.MinigameDatabase;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class PetropiaMinigame extends PetropiaPlugin{
 
     private static PetropiaMinigame plugin;
-    private final de.petropia.turtleServer.api.mysql.SQLDatabase SQLDatabase = new SQLDatabase(this);
+    private final MinigameDatabase minigameDatabase = new MinigameDatabase(this);
     private final List<Arena> arenas = new ArrayList<>();
     private final Hashtable<Player, Arena> playerArenas = new Hashtable<>();
 
@@ -33,9 +33,9 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         requiredPlayersForStart = getConfig().getInt("RequiredPlayersForStart");
 
         //Create necessary tables is the database
-        SQLDatabase.deleteRemainingData();
-        SQLDatabase.createArenasTable();
-        SQLDatabase.createJoiningPlayersTable();
+        minigameDatabase.deleteRemainingData();
+        minigameDatabase.createArenasTable();
+        minigameDatabase.createJoiningPlayersTable();
 
         MultiverseCore mvCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
         worldManager = mvCore.getMVWorldManager();
@@ -54,20 +54,20 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
      */
     protected void createConfigData(){
         //Database information
-        if(!getConfig().contains("Database.Address")){
-            getConfig().set("Database.Address", "localhost");
+        if(!getConfig().contains("MinigameDatabase.Address")){
+            getConfig().set("MinigameDatabase.Address", "localhost");
         }
-        if(!getConfig().contains("Database.Port")){
-            getConfig().set("Database.Port", "3306");
+        if(!getConfig().contains("MinigameDatabase.Port")){
+            getConfig().set("MinigameDatabase.Port", "3306");
         }
-        if(!getConfig().contains("Database.Name")){
-            getConfig().set("Database.Name", "DeadByDaylight");
+        if(!getConfig().contains("MinigameDatabase.Name")){
+            getConfig().set("MinigameDatabase.Name", "Minigame");
         }
-        if(!getConfig().contains("Database.Username")){
-            getConfig().set("Database.Username", "root");
+        if(!getConfig().contains("MinigameDatabase.Username")){
+            getConfig().set("MinigameDatabase.Username", "Minigame");
         }
-        if(!getConfig().contains("Database.Password")){
-            getConfig().set("Database.Password", "");
+        if(!getConfig().contains("MinigameDatabase.Password")){
+            getConfig().set("MinigameDatabase.Password", "password");
         }
 
         //Arena information
@@ -100,8 +100,8 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         return requiredPlayersForStart;
     }
 
-    public de.petropia.turtleServer.api.mysql.SQLDatabase getSQLDatabase() {
-        return SQLDatabase;
+    public MinigameDatabase getMinigameDatabase() {
+        return minigameDatabase;
     }
 
     public List<Arena> getArenas() {
