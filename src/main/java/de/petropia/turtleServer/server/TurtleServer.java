@@ -2,6 +2,7 @@ package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.chatInput.ChatInputListener;
+import de.petropia.turtleServer.api.worlds.WorldDatabase;
 import de.petropia.turtleServer.server.commandBlocker.CommandBlocker;
 import de.petropia.turtleServer.server.commands.PlayerCommand;
 import de.petropia.turtleServer.server.commands.StatsCommand;
@@ -46,6 +47,7 @@ public class TurtleServer extends PetropiaPlugin {
         new PrefixManager();    //init prefix manager
         mongoDBHandler = new MongoDBHandler();
         CommandBlocker.loadCommandBlockList();
+        WorldDatabase.connect();
 
         registerListeners();
         registerCommands();

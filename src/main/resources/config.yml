@@ -6,5 +6,11 @@ Database:
   Password: password
   Hostname: 127.0.0.1
   Port: 27017
+WorldDatabase:
+  User: World
+  Password: Password
+  Database: Worlds
+  Hostname: localhost
+  Port: 3306
 BlockedCommands:
   - "plugins;jajajaja"
