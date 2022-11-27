@@ -7,6 +7,7 @@ import de.petropia.turtleServer.server.commandBlocker.CommandBlocker;
 import de.petropia.turtleServer.server.commands.PlayerCommand;
 import de.petropia.turtleServer.server.commands.StatsCommand;
 import de.petropia.turtleServer.server.commands.TurtleCommand;
+import de.petropia.turtleServer.server.commands.WorldCommand;
 import de.petropia.turtleServer.server.prefix.PrefixManager;
 import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
 import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListener;
@@ -62,6 +63,7 @@ public class TurtleServer extends PetropiaPlugin {
         this.getCommand("player").setExecutor(new PlayerCommand());
         this.getCommand("turtle").setExecutor(new TurtleCommand());
         this.getCommand("stats").setExecutor(new StatsCommand());
+        this.getCommand("world").setExecutor(new WorldCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
     }
 
