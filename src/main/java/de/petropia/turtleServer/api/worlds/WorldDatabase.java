@@ -25,7 +25,7 @@ public class WorldDatabase {
     private static final String USER = TurtleServer.getInstance().getConfig().getString("WorldDatabase.User");
     private static final String PASSWORD = TurtleServer.getInstance().getConfig().getString("WorldDatabase.Password");
     private static final String DATABASE = TurtleServer.getInstance().getConfig().getString("WorldDatabase.Database");
-    private static final String HOSTNAME = TurtleServer.getInstance().getConfig().getString("WorldDatabase.HOSTNAME");
+    private static final String HOSTNAME = TurtleServer.getInstance().getConfig().getString("WorldDatabase.Hostname");
     private static final int PORT = TurtleServer.getInstance().getConfig().getInt("WorldDatabase.Port");
 
     private static DataSource dataSource;
