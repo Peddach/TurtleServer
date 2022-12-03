@@ -19,13 +19,15 @@ public class WorldManager {
     /**
      * Save a world to the worlds database
      * @param world The Bukkit world
-     * @throws ZipException Fired when something went wrong while zipping the file. Can usually be ignored
+     * @throws ZipException Fired when something went wrong while zipping the file
+     * @return CompletableFuture with boolean: true = sueccessfully saved, false = error while saving
      */
-    public static void saveToDBWorld(World world) throws ZipException {
+    public static CompletableFuture<Boolean> saveToDBWorld(World world) throws ZipException {
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unload world " + world.getName());
         if(!Bukkit.getServer().unloadWorld(world, true)){
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to save world: " + world.getName());
-            return;
+            future.complete(false);
         }
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Zip world" + world.getName());
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
@@ -38,6 +40,7 @@ public class WorldManager {
             try (ZipFile zip = new ZipFile(world.getName().toLowerCase() + ".zip")) {
                 if(!regionDir.exists() || !regionDir.isDirectory() || !regionDir.canRead()){
                     TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error - Exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                    future.complete(false);
                     return;
                 }
                 zip.addFile(regionDir, parameters);
@@ -46,9 +49,11 @@ public class WorldManager {
                 e.printStackTrace();
                 TurtleServer.getInstance().getLogger().warning("Exception: path: " + regionDir.getAbsolutePath());
                 TurtleServer.getInstance().getLogger().warning("Exception: exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                future.complete(false);
                 return;
             }
             if(zipFile == null){
+                future.complete(false);
                 return;
             }
             try (FileInputStream stream = new FileInputStream(zipFile)){
@@ -56,14 +61,18 @@ public class WorldManager {
                 WorldDatabase.saveWorld(world.getName(), bytes, world.getEnvironment()).thenAccept(result -> {
                     if(result){
                         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Saved world " + world.getName() + " to DB");
+                        future.complete(true);
                         return;
                     }
                     TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while trying to save " + world.getName() + " to DB!");
+                    future.complete(false);
                 });
             } catch (IOException e) {
+                future.complete(false);
                 throw new RuntimeException(e);
             }
         });
+        return future;
     }
 
     /**
