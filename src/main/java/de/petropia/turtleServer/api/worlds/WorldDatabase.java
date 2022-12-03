@@ -12,11 +12,11 @@ public class WorldDatabase {
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS Worlds (" +
             "id VARCHAR(50) PRIMARY KEY," +
-            "data LONGBLOB NOT NULL," +
+            "regionData LONGBLOB NOT NULL," +
             "env VARCHAR(20) NOT NULL" +
             ")";
-    private static final String QUERY_WORLD = "SELECT id, data, env FROM Worlds WHERE id = ?";
-    private static final String SAVE_WORLD = "REPLACE INTO Worlds id, data, env VALUES (?, ?, ?)";
+    private static final String QUERY_WORLD = "SELECT (id, regionData, env) FROM Worlds WHERE id = ?";
+    private static final String SAVE_WORLD = "REPLACE INTO Worlds (id, regionData, env) VALUES (?, ?, ?)";
     private static final String DELETE_WORLD = "DELETE FROM Worlds WHERE id = ?";
 
     private static final String USER = TurtleServer.getInstance().getConfig().getString("WorldDatabase.User");
