@@ -6,6 +6,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.lingala.zip4j.exception.ZipException;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,8 +39,12 @@ public class WorldCommand implements CommandExecutor {
             )));
         }
         if(args[0].equalsIgnoreCase("saveyes")){
+            World worldToSave = player.getWorld();
+            for (Player wPlayer : worldToSave.getPlayers()) {
+                wPlayer.teleport(Bukkit.getWorld("world").getSpawnLocation());
+            }
             try {
-                WorldManager.saveToDBWorld((player.getWorld()));
+                WorldManager.saveToDBWorld(worldToSave);
                 TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Welt gespeichert!"));
             } catch (ZipException e) {
                 e.printStackTrace();

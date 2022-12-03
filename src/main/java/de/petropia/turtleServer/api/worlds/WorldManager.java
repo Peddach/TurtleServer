@@ -23,7 +23,10 @@ public class WorldManager {
      */
     public static void saveToDBWorld(World world) throws ZipException {
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unload world " + world.getName());
-        Bukkit.getServer().unloadWorld(world, true);
+        if(!Bukkit.getServer().unloadWorld(world, true)){
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to save world: " + world.getName());
+            return;
+        }
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Zip world" + world.getName());
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             File worldDir = new File(Bukkit.getServer().getWorldContainer(), world.getName());
@@ -32,11 +35,18 @@ public class WorldManager {
             parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
             File zipFile;
-            try (ZipFile zip = new ZipFile(world.getName().toLowerCase())) {
-                zip.addFolder(regionDir, parameters);
+            try (ZipFile zip = new ZipFile(world.getName().toLowerCase() + ".zip")) {
+                if(!regionDir.exists() || !regionDir.isDirectory() || !regionDir.canRead()){
+                    TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error - Exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                    return;
+                }
+                zip.addFile(regionDir, parameters);
                 zipFile = zip.getFile();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                TurtleServer.getInstance().getLogger().warning("Exception: path: " + regionDir.getAbsolutePath());
+                TurtleServer.getInstance().getLogger().warning("Exception: exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                return;
             }
             if(zipFile == null){
                 return;
@@ -78,7 +88,7 @@ public class WorldManager {
                fileOutputStream.close();
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + record.id());
                ZipFile outZip = new ZipFile(outDir);
-               outZip.extractAll(new File(Bukkit.getServer().getWorldContainer(), record.id()).getPath());
+               outZip.extractAll(new File(Bukkit.getServer().getWorldContainer(), record.id()).getCanonicalPath());
                outZip.close();
                outDir.delete();
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted" + record.id() + ".zip");

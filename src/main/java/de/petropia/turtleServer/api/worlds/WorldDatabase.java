@@ -5,10 +5,7 @@ import de.petropia.turtleServer.server.TurtleServer;
 import org.bukkit.World;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldDatabase {
@@ -19,7 +16,7 @@ public class WorldDatabase {
             "env VARCHAR(20) NOT NULL" +
             ")";
     private static final String QUERY_WORLD = "SELECT id, data, env FROM Worlds WHERE id = ?";
-    private static final String SAVE_WORLD = "REPLACE INTO Worlds id, data, env VALUES (?, ?, ?, ?)";
+    private static final String SAVE_WORLD = "REPLACE INTO Worlds id, data, env VALUES (?, ?, ?)";
     private static final String DELETE_WORLD = "DELETE FROM Worlds WHERE id = ?";
 
     private static final String USER = TurtleServer.getInstance().getConfig().getString("WorldDatabase.User");
@@ -74,8 +71,10 @@ public class WorldDatabase {
     public static CompletableFuture<Boolean> saveWorld(String id, byte[] data, World.Environment environment){
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SAVE_WORLD)){
+                Blob blob = connection.createBlob();
+                blob.setBytes(1, data);
                 statement.setString(1, id.toLowerCase());
-                statement.setBytes(2, data);
+                statement.setBlob(2, blob);
                 statement.setString(3, environment.name());
                 statement.execute();
                 return true;
