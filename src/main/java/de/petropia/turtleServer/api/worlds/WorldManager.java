@@ -34,6 +34,10 @@ public class WorldManager {
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             File worldDir = new File(Bukkit.getServer().getWorldContainer(), world.getName());
             File regionDir = new File(worldDir, "region");
+            File entitiesDir = new File(worldDir, "entities");
+            File levelDat = new File(worldDir, "level.dat");
+            File poiDir = new File(worldDir, "poi");
+            File dataDir = new File(worldDir, "data");
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
@@ -44,7 +48,11 @@ public class WorldManager {
                     future.complete(false);
                     return;
                 }
-                zip.addFile(regionDir, parameters);
+                zip.addFile(levelDat, parameters);
+                zip.addFolder(entitiesDir, parameters);
+                zip.addFolder(poiDir, parameters);
+                zip.addFolder(dataDir, parameters);
+                zip.addFolder(regionDir, parameters);
                 zipFile = zip.getFile();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,25 +100,26 @@ public class WorldManager {
        WorldDatabase.loadWorldFromDB(id).thenAccept(record -> {
            try {
                File tmpDir = new File(TurtleServer.getInstance().getDataFolder(), "tempWorlds");
-               if(!tmpDir.exists()){
-                   tmpDir.mkdirs();
-               }
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Load world " + record.id() + " from DB");
+               tmpDir.mkdirs();
                File outDir = new File(tmpDir, record.id() + ".zip");
-               outDir.mkdirs();
+               outDir.createNewFile();
                FileOutputStream fileOutputStream = new FileOutputStream(outDir);
                fileOutputStream.write(record.data());
                fileOutputStream.close();
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + record.id());
-               ZipFile outZip = new ZipFile(outDir);
-               outZip.extractAll(new File(Bukkit.getServer().getWorldContainer(), record.id()).getCanonicalPath());
+               ZipFile outZip = new ZipFile(new File(tmpDir, record.id() + ".zip"));
+               File finalWorldDir = new File(Bukkit.getWorldContainer(), loadedName);
+               outZip.extractAll(finalWorldDir.getCanonicalPath());
                outZip.close();
-               outDir.delete();
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted" + record.id() + ".zip");
+               outZip.getFile().delete();
+               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + record.id() + ".zip");
                WorldCreator creator = new WorldCreator(loadedName);
                creator.environment(record.environment());
                creator.keepSpawnLoaded(TriState.FALSE);
-               Bukkit.getScheduler().runTask(TurtleServer.getInstance(), creator::createWorld);
+               Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
+                   future.complete(creator.createWorld());
+               });
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Loaded " + record.id() + " successfully!");
            } catch (IOException e) {
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while loading " + record.id() + " : " + e.getMessage());

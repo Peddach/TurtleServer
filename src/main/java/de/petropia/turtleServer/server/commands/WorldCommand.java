@@ -92,6 +92,9 @@ public class WorldCommand implements CommandExecutor {
             WorldManager.loadWorld(args[1], args[2]).thenAccept(world -> {
                 TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Welt erfolgreich geladen!"));
                 player.teleportAsync(world.getSpawnLocation());
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                return null;
             });
         }
         return false;

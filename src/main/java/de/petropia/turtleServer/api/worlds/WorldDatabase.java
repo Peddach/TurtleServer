@@ -15,7 +15,7 @@ public class WorldDatabase {
             "regionData LONGBLOB NOT NULL," +
             "env VARCHAR(20) NOT NULL" +
             ")";
-    private static final String QUERY_WORLD = "SELECT (id, regionData, env) FROM Worlds WHERE id = ?";
+    private static final String QUERY_WORLD = "SELECT id, regionData, env FROM Worlds WHERE id = ?";
     private static final String SAVE_WORLD = "REPLACE INTO Worlds (id, regionData, env) VALUES (?, ?, ?)";
     private static final String DELETE_WORLD = "DELETE FROM Worlds WHERE id = ?";
 
@@ -88,7 +88,9 @@ public class WorldDatabase {
     public static CompletableFuture<WorldDatabaseResultRecord> loadWorldFromDB(String worldID){
         String id = worldID.toLowerCase();
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(QUERY_WORLD); ResultSet resultSet = statement.executeQuery()){
+            try(Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(QUERY_WORLD)){
+                statement.setString(1, id);
+                ResultSet resultSet = statement.executeQuery();
                 if(!resultSet.next()){
                     return null;
                 }
