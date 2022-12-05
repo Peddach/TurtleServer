@@ -1,5 +1,6 @@
 package de.petropia.turtleServer.api.worlds;
 
+import com.mongodb.lang.Nullable;
 import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.util.TriState;
 import net.lingala.zip4j.ZipFile;
@@ -36,7 +37,7 @@ public class WorldManager {
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
-            File zipFile;
+            File zipFile = null;
             try (ZipFile zip = new ZipFile(world.getName().toLowerCase() + ".zip")) {
                 if(!regionDir.exists() || !regionDir.isDirectory() || !regionDir.canRead()){
                     TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error - Exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
@@ -50,6 +51,7 @@ public class WorldManager {
                 TurtleServer.getInstance().getLogger().warning("Exception: path: " + regionDir.getAbsolutePath());
                 TurtleServer.getInstance().getLogger().warning("Exception: exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
                 future.complete(false);
+                deleteZip(zipFile);
                 return;
             }
             if(zipFile == null){
@@ -58,17 +60,21 @@ public class WorldManager {
             }
             try (FileInputStream stream = new FileInputStream(zipFile)){
                 byte[] bytes = stream.readAllBytes();
+                final File finalZipFile = zipFile;
                 WorldDatabase.saveWorld(world.getName(), bytes, world.getEnvironment()).thenAccept(result -> {
                     if(result){
                         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Saved world " + world.getName() + " to DB");
                         future.complete(true);
+                        deleteZip(finalZipFile);
                         return;
                     }
                     TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while trying to save " + world.getName() + " to DB!");
                     future.complete(false);
+                    deleteZip(finalZipFile);
                 });
             } catch (IOException e) {
                 future.complete(false);
+                deleteZip(zipFile);
                 throw new RuntimeException(e);
             }
         });
@@ -113,5 +119,12 @@ public class WorldManager {
            }
        });
        return future;
+    }
+
+    private static void deleteZip(@Nullable File zip){
+        if (zip == null || !zip.exists()) {
+            return;
+        }
+        zip.delete();
     }
 }
