@@ -402,7 +402,7 @@ public class FastBoard {
 
     /**
      * Delete this FastBoard, and will remove the scoreboard for the associated player if he is online.
-     * After this, all uses of {@link #updateLines} and {@link #updateTitle} will throws an {@link IllegalStateException}
+     * After this, all uses of {@link #updateLines} and {@link #updateTitle} will throw an {@link IllegalStateException}
      *
      * @throws IllegalStateException if this was already call before
      */

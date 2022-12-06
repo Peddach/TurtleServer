@@ -26,7 +26,7 @@ public class GameStartCountdown extends Countdown {
         }else{
             if(seconds <= startSeconds){
                 seconds = startSeconds + 10;
-                arena.broadcast(Component.text("§cEs werden noch §6" + (PetropiaMinigame.getPlugin().getMaxPlayers() - arena.getPlayers().size()) + "§c Spieler benötigt, um das Spiel zu starten!"));
+                arena.broadcast(Component.text("§cEs werden noch §6" + (PetropiaMinigame.getPlugin().getRequiredPlayersForStart() - arena.getPlayers().size()) + "§c Spieler benötigt, um das Spiel zu starten!"));
             }
         }
     }
