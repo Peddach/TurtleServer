@@ -129,6 +129,16 @@ public class WorldManager {
        });
        return future;
     }
+    public static void deleteLocalWorld(World world) {
+        if(world == null){
+            return;
+        }
+        File worldDir = new File(Bukkit.getWorldContainer(), world.getName());
+        Bukkit.unloadWorld(world, false);
+        if(!worldDir.delete()){
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to delete " + worldDir.getName());
+        }
+    }
 
     private static void deleteZip(@Nullable File zip){
         if (zip == null || !zip.exists()) {
@@ -136,4 +146,5 @@ public class WorldManager {
         }
         zip.delete();
     }
+
 }

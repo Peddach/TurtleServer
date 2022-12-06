@@ -29,8 +29,20 @@ public class WorldCommand implements CommandExecutor {
             TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Argumente: copy, load, save", NamedTextColor.GRAY));
             return false;
         }
-        if(args[0].equalsIgnoreCase("copy")){
-            //TODO implement!
+        if(args[0].equalsIgnoreCase("deleteLocal")){
+            if(args.length != 2){
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Bitte gib eine Welt an!"));
+                return false;
+            }
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Bist du sicher, dass die Welt aus der Datenbank gelöscht werden soll?", NamedTextColor.RED));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Diese Aktion ist irreversibel!", NamedTextColor.DARK_RED));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("[✔]", NamedTextColor.GREEN).clickEvent(ClickEvent.clickEvent(
+                    ClickEvent.Action.RUN_COMMAND, "/world deleteLocalyes " + args[1]
+            )));
+        }
+        if(args[0].equalsIgnoreCase("deleteLocalyes")){
+            TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Lösche Welt" + args[1]));
+            WorldManager.deleteLocalWorld(Bukkit.getWorld(args[1]));
         }
         if(args[0].equalsIgnoreCase("save")){
             TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Bist du dir sicher, dass die Welt in der du dich befindest gespeichert werden soll in der Datenbank?", NamedTextColor.RED));
