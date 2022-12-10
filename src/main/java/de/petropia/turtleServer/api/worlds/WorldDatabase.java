@@ -2,6 +2,7 @@ package de.petropia.turtleServer.api.worlds;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import de.petropia.turtleServer.server.TurtleServer;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import javax.sql.DataSource;
@@ -102,6 +103,17 @@ public class WorldDatabase {
                 e.printStackTrace();
                 return null;
             }
+        });
+    }
+
+    public static void deleteWorld(String worldID){
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
+           try(Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_WORLD)) {
+               statement.setString(1, worldID.toLowerCase());
+               statement.execute();
+           } catch (SQLException e) {
+               throw new RuntimeException(e);
+           }
         });
     }
 }

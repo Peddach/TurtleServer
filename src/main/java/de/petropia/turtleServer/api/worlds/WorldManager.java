@@ -29,6 +29,7 @@ public class WorldManager {
         if(!Bukkit.getServer().unloadWorld(world, true)){
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to save world: " + world.getName());
             future.complete(false);
+            return future;
         }
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Zip world" + world.getName());
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
@@ -117,9 +118,7 @@ public class WorldManager {
                WorldCreator creator = new WorldCreator(loadedName);
                creator.environment(record.environment());
                creator.keepSpawnLoaded(TriState.FALSE);
-               Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
-                   future.complete(creator.createWorld());
-               });
+               Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> future.complete(creator.createWorld()));
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Loaded " + record.id() + " successfully!");
            } catch (IOException e) {
                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while loading " + record.id() + " : " + e.getMessage());
@@ -129,15 +128,29 @@ public class WorldManager {
        });
        return future;
     }
+
+    /**
+     * Delete a world async on the local server and unloads it
+     * @param world Bukkit {@link World} to unload and delete async
+     */
     public static void deleteLocalWorld(World world) {
         if(world == null){
             return;
         }
-        File worldDir = new File(Bukkit.getWorldContainer(), world.getName());
-        Bukkit.unloadWorld(world, false);
-        if(!worldDir.delete()){
-            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to delete " + worldDir.getName());
+        if(world.getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())){
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant delete the default world");
+            return;
         }
+        world.getPlayers().forEach(player -> {
+            player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
+        });
+        final File worldDir = world.getWorldFolder();
+        Bukkit.unloadWorld(world, false);
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
+            if(!worldDir.delete()){
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to delete " + worldDir.getName());
+            }
+        });
     }
 
     private static void deleteZip(@Nullable File zip){
