@@ -71,7 +71,11 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
         }
         if (args[0].equalsIgnoreCase("deleteLocal")) {
             if (args.length != 2) {
-                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Bitte gib eine Welt an!"));
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Bitte gib eine Welt an!", NamedTextColor.RED));
+                return false;
+            }
+            if(Bukkit.getWorld(args[1]) == null){
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Diese Welt existiert nicht!", NamedTextColor.RED));
                 return false;
             }
             TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Bist du sicher, dass die Welt vom aktuellen Server gelöscht werden soll?", NamedTextColor.RED));
@@ -83,6 +87,21 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
         if (args[0].equalsIgnoreCase("deleteLocalyes")) {
             TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Lösche Welt: " + args[1], NamedTextColor.RED));
             WorldManager.deleteLocalWorld(Bukkit.getWorld(args[1]));
+        }
+        if (args[0].equalsIgnoreCase("deleteDB")) {
+            if (args.length != 2) {
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Bitte gib eine Welt an!"));
+                return false;
+            }
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Bist du sicher, dass die Welt aus der Datenbank gelöscht werden soll?", NamedTextColor.RED));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Diese Aktion ist irreversibel!", NamedTextColor.DARK_RED));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("[✔]", NamedTextColor.GREEN).clickEvent(ClickEvent.clickEvent(
+                    ClickEvent.Action.RUN_COMMAND, "/world deleteDByes " + args[1]
+            )));
+        }
+        if (args[0].equalsIgnoreCase("deleteDByes")) {
+            TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Lösche Welt aus Datenbank: " + args[1], NamedTextColor.RED));
+            WorldManager.deleteDatabaseWorld(args[1]);
         }
         if (args[0].equalsIgnoreCase("save")) {
             TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Bist du dir sicher, dass die Welt in der du dich befindest gespeichert werden soll in der Datenbank?", NamedTextColor.RED));
@@ -156,7 +175,7 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         final List<String> tab = new ArrayList<>();
         if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], Arrays.asList("save", "deleteLocal", "load", "list", "tp"), tab);
+            StringUtil.copyPartialMatches(args[0], Arrays.asList("save", "deleteLocal", "load", "list", "tp", "deleteDB"), tab);
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("deleteLocal") || args[0].equalsIgnoreCase("tp"))) {
             StringUtil.copyPartialMatches(args[1], Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), tab);

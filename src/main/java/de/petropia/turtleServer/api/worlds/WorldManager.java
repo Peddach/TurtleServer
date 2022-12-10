@@ -141,16 +141,16 @@ public class WorldManager {
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant delete the default world");
             return;
         }
-        world.getPlayers().forEach(player -> {
-            player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
-        });
+        world.getPlayers().forEach(player -> player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation()));
         final File worldDir = world.getWorldFolder();
-        Bukkit.unloadWorld(world, false);
-        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
-            if(!worldDir.delete()){
-                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to delete " + worldDir.getName());
-            }
-        });
+        if(!Bukkit.unloadWorld(world, false)){
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant unload world: " + world.getName());
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> deleteRecursive(worldDir));
+    }
+
+    public static void deleteDatabaseWorld(String id){
+        WorldDatabase.deleteWorld(id.toLowerCase());
     }
 
     private static void deleteZip(@Nullable File zip){
@@ -158,6 +158,29 @@ public class WorldManager {
             return;
         }
         zip.delete();
+    }
+
+    /**
+     * Delete all content in a directory and the directory itself
+     * @param directory The directory to delete
+     */
+    private static void deleteRecursive(File directory){
+        if(directory == null || !directory.exists()){
+            return;
+        }
+        File[] files = directory.listFiles();
+        if(files == null){  //Can be null when dir is empty or IO error
+            directory.delete();
+            return;
+        }
+        for(File file : files) {
+            if(file.isDirectory()) {
+                deleteRecursive(file);  //delete subdir recursive
+            } else {
+                file.delete();
+            }
+        }
+        directory.delete(); //delete root dir -> now it is empty
     }
 
 }
