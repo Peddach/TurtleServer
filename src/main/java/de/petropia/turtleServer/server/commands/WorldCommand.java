@@ -168,6 +168,33 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
                 return null;
             });
         }
+        if(args[0].equalsIgnoreCase("generate")){
+            if(args.length != 3){
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Bitte gib eine Welt und die distanz vom Punkt 0, 0 in jede Richtung an", NamedTextColor.RED));
+            }
+            World world = Bukkit.getWorld(args[1]);
+            if(world == null){
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Diese Welt existiert nicht!", NamedTextColor.RED));
+                return false;
+            }
+            int blocks;
+            try {
+                blocks = Integer.parseInt(args[2]);
+                if(blocks <= 0){
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e){
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Keine Valide Zahl!", NamedTextColor.RED));
+                return false;
+            }
+            WorldManager.generate(world, blocks, false).thenAccept(success -> {
+                if(success){
+                    TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Chunks erfolgreich generiert!", NamedTextColor.GREEN));
+                    return;
+                }
+                TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Chunks konnten nicht generiert werden!", NamedTextColor.RED));
+            });
+        }
         return false;
     }
 
@@ -175,9 +202,9 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         final List<String> tab = new ArrayList<>();
         if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], Arrays.asList("save", "deleteLocal", "load", "list", "tp", "deleteDB"), tab);
+            StringUtil.copyPartialMatches(args[0], Arrays.asList("save", "deleteLocal", "load", "list", "tp", "deleteDB", "generate"), tab);
         }
-        if (args.length == 2 && (args[0].equalsIgnoreCase("deleteLocal") || args[0].equalsIgnoreCase("tp"))) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("deleteLocal") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("generate"))) {
             StringUtil.copyPartialMatches(args[1], Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), tab);
         }
         return tab;

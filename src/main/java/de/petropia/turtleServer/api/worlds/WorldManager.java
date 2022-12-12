@@ -8,11 +8,11 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.CompressionMethod;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldManager {
@@ -183,4 +183,48 @@ public class WorldManager {
         directory.delete(); //delete root dir -> now it is empty
     }
 
+    /**
+     * Pregenerate Chunks from Spawn
+     * @param world The world where the Chunks should generate
+     * @param blocksFromSpawnToGen The Blocks in each direction to generate
+     * @param lazy when lazy true, only if enough system resources are available, the chunks are goinig to be generated. This will take longer, but is better for the performance
+     * @return A Furture which will be completed <b>synchronously</b> when all chunks are generated.
+     */
+    public static CompletableFuture<Boolean> generate(World world, int blocksFromSpawnToGen, boolean lazy){
+        final CompletableFuture<Boolean> boolfuture = new CompletableFuture<>();
+        new Thread(() -> {
+            int blocksFromSpawn = blocksFromSpawnToGen;
+            if(blocksFromSpawn % 16 != 0){
+                blocksFromSpawn += blocksFromSpawn % 16;
+            }
+            int chunks = blocksFromSpawn >> 4;
+            chunks = chunks * 2;    //double it, so we can subtract half of it later to generate in negative space -> 0-3 [double]-> 0-6 [subtract half]-> (-3)-3
+            List<Location> chunksToGenerate = new ArrayList<>();
+            for(int x = 0; x < chunks; x++){
+                for (int y = 0; y < chunks; y++){
+                    int xcoord = x - (chunks / 2);
+                    int ycoord = y - (chunks / 2);
+                    chunksToGenerate.add(new Location(world, xcoord * 16, 0, ycoord * 16));
+                }
+            }
+            final int chunkBufferSize = TurtleServer.getInstance().getConfig().getInt("ChunkGenBuffer");
+            List<CompletableFuture<Chunk>> buffer = new ArrayList<>();
+            for(int i = 0; i < chunksToGenerate.size(); i++){
+                if(lazy){
+                    buffer.add(world.getChunkAtAsyncUrgently(chunksToGenerate.get(i), true));
+                } else {
+                    buffer.add(world.getChunkAtAsync(chunksToGenerate.get(i), true));
+                }
+                if(i % chunkBufferSize == 0 ||i == chunksToGenerate.size() - 1){
+                    CompletableFuture.allOf(buffer.toArray(new CompletableFuture[0])).join();
+                    buffer.clear();
+                }
+            }
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
+                boolfuture.complete(true);
+            });
+            chunksToGenerate.clear();
+        }).start();
+        return boolfuture;
+    }
 }

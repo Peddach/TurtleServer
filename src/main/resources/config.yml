@@ -14,3 +14,4 @@ WorldDatabase:
   Port: 3306
 BlockedCommands:
   - "plugins;jajajaja"
+ChunkGenBuffer: 10
