@@ -1,6 +1,5 @@
 package de.petropia.turtleServer.api.worlds;
 
-import com.mongodb.lang.Nullable;
 import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.util.TriState;
 import net.lingala.zip4j.ZipFile;
@@ -8,7 +7,10 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.CompressionMethod;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -86,6 +88,55 @@ public class WorldManager {
                 deleteZip(zipFile);
                 throw new RuntimeException(e);
             }
+        });
+        return future;
+    }
+
+    /**
+     * This Method copies a local world
+     * @param world The world to copy
+     * @param newWorld Name of the new world
+     * @return A {@link CompletableFuture} which gets completed when copied
+     */
+    public static @NotNull CompletableFuture<World> copyLocalWorld(World world, String newWorld){
+        CompletableFuture<World> future = new CompletableFuture<>();
+        if(world == null || newWorld.isEmpty() || newWorld.isBlank()){
+            future.complete(null);
+            throw new IllegalArgumentException("World is null or new world name is empty/blank");
+        }
+        World.Environment worldEnv = world.getEnvironment();
+        String worldName = world.getName();
+        Bukkit.unloadWorld(world, true);
+        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
+            File regionDir = new File(world.getWorldFolder(), "region");
+            File entitiesDir = new File(world.getWorldFolder(), "entities");
+            File levelDat = new File(world.getWorldFolder(), "level.dat");
+            File poiDir = new File(world.getWorldFolder(), "poi");
+            File dataDir = new File(world.getWorldFolder(), "data");
+            File newWorldDir = new File(Bukkit.getWorldContainer(), newWorld);
+            newWorldDir.mkdirs();
+            try {
+                FileUtils.copyDirectory(regionDir, new File(newWorldDir, "region"));
+                FileUtils.copyDirectory(entitiesDir, new File(newWorldDir, "entities"));
+                FileUtils.copyDirectory(poiDir, new File(newWorldDir, "poi"));
+                FileUtils.copyDirectory(dataDir, new File(newWorldDir, "data"));
+                FileUtils.copyFileToDirectory(levelDat, newWorldDir);
+            } catch (IOException e) {
+                future.complete(null);
+                throw new RuntimeException(e);
+            }
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
+                WorldCreator creator = new WorldCreator(worldName);
+                creator.environment(worldEnv);
+                creator.keepSpawnLoaded(TriState.FALSE);
+                creator.createWorld();
+            });
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
+               WorldCreator creator = new WorldCreator(newWorld);
+               creator.keepSpawnLoaded(TriState.FALSE);
+               creator.environment(worldEnv);
+               future.complete(creator.createWorld());
+            });
         });
         return future;
     }
@@ -220,9 +271,7 @@ public class WorldManager {
                     buffer.clear();
                 }
             }
-            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
-                boolfuture.complete(true);
-            });
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> boolfuture.complete(true));
             chunksToGenerate.clear();
         }).start();
         return boolfuture;
