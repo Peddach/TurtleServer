@@ -24,6 +24,7 @@ public class TurtleCommand implements CommandExecutor {
         }
         if (args.length == 0) {
             TurtleServer.getInstance().getMessageUtil().sendMessage(player, Component.text("Es gibt folgende Subcommands: BlockedCommands, NameOn, NameOff"));
+            return false;
         }
         if (args[0].equalsIgnoreCase("blockedCommands")) {
             for (String cmd : CommandBlocker.getBlockedCommands().keySet()) {
