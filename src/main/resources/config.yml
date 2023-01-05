@@ -15,3 +15,7 @@ WorldDatabase:
 BlockedCommands:
   - "plugins;jajajaja"
 ChunkGenBuffer: 10
+DefaultWorldOverride:
+  - "Lobby:Hub_Spawn"
+  - "Bingo:Bingo_Spawn"
+  - "ChickenLeague:Cl_Spawn"

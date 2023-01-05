@@ -22,14 +22,14 @@ public class PrefixManager {
     private final List<PrefixGroup> prefixGroups = new ArrayList<>();
     private final HashMap<Player, TextColor> playerNameColorMap = new HashMap<>();
 
-    private final Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
+    private final Scoreboard scoreboard;
     private static PrefixManager instance;
 
     /**
      * The PrefixManager ist for managing chat and tab prefixes on every server. By default, every prefix is loaded in the MiniMessage format from Luckperms
      */
     public PrefixManager(){
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         instance = this;
         loadGroups();
     }

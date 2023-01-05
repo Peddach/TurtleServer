@@ -14,21 +14,62 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldManager {
 
     /**
+     * Load the spawn world, if configured in the config.yml
+     */
+    public static void loadSpawnWorld() {
+        List<String> configList = TurtleServer.getInstance().getConfig().getStringList("DefaultWorldOverride");
+        HashMap<String, String> taskWorldIDMap = new HashMap<>();
+        for (String str : configList) {
+            String[] strings = str.split(":");
+            if (strings.length != 2) {
+                TurtleServer.getInstance().getLogger().warning("Wrong format in Config for DefaultWorldOverride: " + str);
+                continue;
+            }
+            taskWorldIDMap.put(strings[0], strings[1]);
+        }
+        String task = TurtleServer.getInstance().getCloudNetAdapter().getServerTaskName();
+        if (!taskWorldIDMap.containsKey(task)) {
+            return;
+        }
+        String levelName;
+        try (InputStream inputStream = new FileInputStream(new File(Bukkit.getPluginsFolder().getParentFile(), "server.properties"))) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            levelName = properties.getProperty("level-name");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        TurtleServer.getInstance().getLogger().info("Loading map for " + task + " with ID: " + taskWorldIDMap.get(task) + "! Level-Name=" + levelName);
+        for (File file : Bukkit.getWorldContainer().listFiles()) {
+            if (file.getName().equalsIgnoreCase(levelName)) {
+                TurtleServer.getInstance().getLogger().warning("Found a default level: " + levelName + "! Deleting world directory " + levelName);
+                deleteRecursive(file);
+                break;
+            }
+        }
+        loadWorld(taskWorldIDMap.get(task), levelName, false).join();
+    }
+
+    /**
      * Save a world to the worlds database
+     *
      * @param world The Bukkit world
-     * @throws ZipException Fired when something went wrong while zipping the file
      * @return CompletableFuture with boolean: true = sueccessfully saved, false = error while saving
+     * @throws ZipException Fired when something went wrong while zipping the file
      */
     public static CompletableFuture<Boolean> saveToDBWorld(World world) throws ZipException {
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unload world " + world.getName());
-        if(!Bukkit.getServer().unloadWorld(world, true)){
+        if (!Bukkit.getServer().unloadWorld(world, true)) {
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Failed to save world: " + world.getName());
             future.complete(false);
             return future;
@@ -46,8 +87,8 @@ public class WorldManager {
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
             File zipFile = null;
             try (ZipFile zip = new ZipFile(world.getName().toLowerCase() + ".zip")) {
-                if(!regionDir.exists() || !regionDir.isDirectory() || !regionDir.canRead()){
-                    TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error - Exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                if (!regionDir.exists() || !regionDir.isDirectory() || !regionDir.canRead()) {
+                    TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error - Exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " + regionDir.canRead());
                     future.complete(false);
                     return;
                 }
@@ -60,20 +101,20 @@ public class WorldManager {
             } catch (IOException e) {
                 e.printStackTrace();
                 TurtleServer.getInstance().getLogger().warning("Exception: path: " + regionDir.getAbsolutePath());
-                TurtleServer.getInstance().getLogger().warning("Exception: exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " +regionDir.canRead());
+                TurtleServer.getInstance().getLogger().warning("Exception: exists: " + regionDir.exists() + "| isDir: " + regionDir.isDirectory() + "| read: " + regionDir.canRead());
                 future.complete(false);
                 deleteZip(zipFile);
                 return;
             }
-            if(zipFile == null){
+            if (zipFile == null) {
                 future.complete(false);
                 return;
             }
-            try (FileInputStream stream = new FileInputStream(zipFile)){
+            try (FileInputStream stream = new FileInputStream(zipFile)) {
                 byte[] bytes = stream.readAllBytes();
                 final File finalZipFile = zipFile;
                 WorldDatabase.saveWorld(world.getName(), bytes, world.getEnvironment()).thenAccept(result -> {
-                    if(result){
+                    if (result) {
                         TurtleServer.getInstance().getMessageUtil().showDebugMessage("Saved world " + world.getName() + " to DB");
                         future.complete(true);
                         deleteZip(finalZipFile);
@@ -94,13 +135,14 @@ public class WorldManager {
 
     /**
      * This Method copies a local world
-     * @param world The world to copy
+     *
+     * @param world    The world to copy
      * @param newWorld Name of the new world
      * @return A {@link CompletableFuture} which gets completed when copied
      */
-    public static @NotNull CompletableFuture<World> copyLocalWorld(World world, String newWorld){
+    public static @NotNull CompletableFuture<World> copyLocalWorld(World world, String newWorld) {
         CompletableFuture<World> future = new CompletableFuture<>();
-        if(world == null || newWorld.isEmpty() || newWorld.isBlank()){
+        if (world == null || newWorld.isEmpty() || newWorld.isBlank()) {
             future.complete(null);
             throw new IllegalArgumentException("World is null or new world name is empty/blank");
         }
@@ -132,10 +174,10 @@ public class WorldManager {
                 creator.createWorld();
             });
             Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> {
-               WorldCreator creator = new WorldCreator(newWorld);
-               creator.keepSpawnLoaded(TriState.FALSE);
-               creator.environment(worldEnv);
-               future.complete(creator.createWorld());
+                WorldCreator creator = new WorldCreator(newWorld);
+                creator.keepSpawnLoaded(TriState.FALSE);
+                creator.environment(worldEnv);
+                future.complete(creator.createWorld());
             });
         });
         return future;
@@ -143,68 +185,86 @@ public class WorldManager {
 
     /**
      * Load a world from the database
-     * @param id The id in the database
+     *
+     * @param id         The id in the database
      * @param loadedName The name the world sould get when loaded
      * @return A completeable future when the world is loaded
      */
-    public static CompletableFuture<World> loadWorld(String id, String loadedName){
-       final CompletableFuture<World> future = new CompletableFuture<>();
-       WorldDatabase.loadWorldFromDB(id).thenAccept(record -> {
-           try {
-               File tmpDir = new File(TurtleServer.getInstance().getDataFolder(), "tempWorlds");
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Load world " + record.id() + " from DB");
-               tmpDir.mkdirs();
-               File outDir = new File(tmpDir, record.id() + ".zip");
-               outDir.createNewFile();
-               FileOutputStream fileOutputStream = new FileOutputStream(outDir);
-               fileOutputStream.write(record.data());
-               fileOutputStream.close();
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + record.id());
-               ZipFile outZip = new ZipFile(new File(tmpDir, record.id() + ".zip"));
-               File finalWorldDir = new File(Bukkit.getWorldContainer(), loadedName);
-               outZip.extractAll(finalWorldDir.getCanonicalPath());
-               outZip.close();
-               outZip.getFile().delete();
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + record.id() + ".zip");
-               WorldCreator creator = new WorldCreator(loadedName);
-               creator.environment(record.environment());
-               creator.keepSpawnLoaded(TriState.FALSE);
-               Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> future.complete(creator.createWorld()));
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Loaded " + record.id() + " successfully!");
-           } catch (IOException e) {
-               TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while loading " + record.id() + " : " + e.getMessage());
-               e.printStackTrace();
-               throw new RuntimeException(e);
-           }
-       });
-       return future;
+    public static CompletableFuture<World> loadWorld(String id, String loadedName) {
+        return loadWorld(id, loadedName, true);
+    }
+
+    /**
+     * private implementation of method which allows not loading the world into Bukkit.
+     *
+     * @param id         id of world in DB
+     * @param loadedName name when loaded
+     * @param load       should Bukkit load the world
+     * @return CompletableFuture -> completed when loaded/copied. <b>May be null when load is set to false!</b>
+     */
+    private static CompletableFuture<World> loadWorld(String id, String loadedName, boolean load) {
+        final CompletableFuture<World> future = new CompletableFuture<>();
+        WorldDatabase.loadWorldFromDB(id).thenAccept(record -> {
+            try {
+                File tmpDir = new File(TurtleServer.getInstance().getDataFolder(), "tempWorlds");
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Load world " + record.id() + " from DB");
+                tmpDir.mkdirs();
+                File outDir = new File(tmpDir, record.id() + ".zip");
+                outDir.createNewFile();
+                FileOutputStream fileOutputStream = new FileOutputStream(outDir);
+                fileOutputStream.write(record.data());
+                fileOutputStream.close();
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + record.id());
+                ZipFile outZip = new ZipFile(new File(tmpDir, record.id() + ".zip"));
+                File finalWorldDir = new File(Bukkit.getWorldContainer(), loadedName);
+                outZip.extractAll(finalWorldDir.getCanonicalPath());
+                outZip.close();
+                outZip.getFile().delete();
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + record.id() + ".zip");
+                if (!load) {
+                    future.complete(null);
+                    return;
+                }
+                WorldCreator creator = new WorldCreator(loadedName);
+                creator.environment(record.environment());
+                creator.keepSpawnLoaded(TriState.FALSE);
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> future.complete(creator.createWorld()));
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Loaded " + record.id() + " successfully!");
+            } catch (IOException e) {
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Error while loading " + record.id() + " : " + e.getMessage());
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        });
+        return future;
     }
 
     /**
      * Delete a world async on the local server and unloads it
+     *
      * @param world Bukkit {@link World} to unload and delete async
      */
     public static void deleteLocalWorld(World world) {
-        if(world == null){
+        if (world == null) {
             return;
         }
-        if(world.getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())){
+        if (world.getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant delete the default world");
             return;
         }
         world.getPlayers().forEach(player -> player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation()));
         final File worldDir = world.getWorldFolder();
-        if(!Bukkit.unloadWorld(world, false)){
+        if (!Bukkit.unloadWorld(world, false)) {
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant unload world: " + world.getName());
         }
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> deleteRecursive(worldDir));
     }
 
-    public static void deleteDatabaseWorld(String id){
+    public static void deleteDatabaseWorld(String id) {
         WorldDatabase.deleteWorld(id.toLowerCase());
     }
 
-    private static void deleteZip(@Nullable File zip){
+    private static void deleteZip(@Nullable File zip) {
         if (zip == null || !zip.exists()) {
             return;
         }
@@ -213,19 +273,20 @@ public class WorldManager {
 
     /**
      * Delete all content in a directory and the directory itself
+     *
      * @param directory The directory to delete
      */
-    private static void deleteRecursive(File directory){
-        if(directory == null || !directory.exists()){
+    private static void deleteRecursive(File directory) {
+        if (directory == null || !directory.exists()) {
             return;
         }
         File[] files = directory.listFiles();
-        if(files == null){  //Can be null when dir is empty or IO error
+        if (files == null) {  //Can be null when dir is empty or IO error
             directory.delete();
             return;
         }
-        for(File file : files) {
-            if(file.isDirectory()) {
+        for (File file : files) {
+            if (file.isDirectory()) {
                 deleteRecursive(file);  //delete subdir recursive
             } else {
                 file.delete();
@@ -236,23 +297,24 @@ public class WorldManager {
 
     /**
      * Pregenerate Chunks from Spawn
-     * @param world The world where the Chunks should generate
+     *
+     * @param world                The world where the Chunks should generate
      * @param blocksFromSpawnToGen The Blocks in each direction to generate
-     * @param lazy when lazy true, only if enough system resources are available, the chunks are goinig to be generated. This will take longer, but is better for the performance
+     * @param lazy                 when lazy true, only if enough system resources are available, the chunks are goinig to be generated. This will take longer, but is better for the performance
      * @return A Furture which will be completed <b>synchronously</b> when all chunks are generated.
      */
-    public static CompletableFuture<Boolean> generate(World world, int blocksFromSpawnToGen, boolean lazy){
+    public static CompletableFuture<Boolean> generate(World world, int blocksFromSpawnToGen, boolean lazy) {
         final CompletableFuture<Boolean> boolfuture = new CompletableFuture<>();
         new Thread(() -> {
             int blocksFromSpawn = blocksFromSpawnToGen;
-            if(blocksFromSpawn % 16 != 0){
+            if (blocksFromSpawn % 16 != 0) {
                 blocksFromSpawn += blocksFromSpawn % 16;
             }
             int chunks = blocksFromSpawn >> 4;
             chunks = chunks * 2;    //double it, so we can subtract half of it later to generate in negative space -> 0-3 [double]-> 0-6 [subtract half]-> (-3)-3
             List<Location> chunksToGenerate = new ArrayList<>();
-            for(int x = 0; x < chunks; x++){
-                for (int y = 0; y < chunks; y++){
+            for (int x = 0; x < chunks; x++) {
+                for (int y = 0; y < chunks; y++) {
                     int xcoord = x - (chunks / 2);
                     int ycoord = y - (chunks / 2);
                     chunksToGenerate.add(new Location(world, xcoord * 16, 0, ycoord * 16));
@@ -260,13 +322,13 @@ public class WorldManager {
             }
             final int chunkBufferSize = TurtleServer.getInstance().getConfig().getInt("ChunkGenBuffer");
             List<CompletableFuture<Chunk>> buffer = new ArrayList<>();
-            for(int i = 0; i < chunksToGenerate.size(); i++){
-                if(lazy){
+            for (int i = 0; i < chunksToGenerate.size(); i++) {
+                if (lazy) {
                     buffer.add(world.getChunkAtAsyncUrgently(chunksToGenerate.get(i), true));
                 } else {
                     buffer.add(world.getChunkAtAsync(chunksToGenerate.get(i), true));
                 }
-                if(i % chunkBufferSize == 0 ||i == chunksToGenerate.size() - 1){
+                if (i % chunkBufferSize == 0 || i == chunksToGenerate.size() - 1) {
                     CompletableFuture.allOf(buffer.toArray(new CompletableFuture[0])).join();
                     buffer.clear();
                 }

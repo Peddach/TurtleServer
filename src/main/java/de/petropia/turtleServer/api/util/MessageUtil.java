@@ -88,5 +88,6 @@ public class MessageUtil {
         });
         Audience audience = Audience.audience(players);
         audience.sendMessage(prefix.append(Component.text("[i] ").color(NamedTextColor.YELLOW)).append(message));
+        TurtleServer.getInstance().getComponentLogger().debug(message);
     }
 }

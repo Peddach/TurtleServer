@@ -3,6 +3,7 @@ main: de.petropia.turtleServer.server.TurtleServer
 authors: [Professor_Sam, Jetztmachtsbumm]
 version: ${project.version}
 description: "Core system of petropia.de"
+load: "STARTUP"
 depend:
   - "LuckPerms"
 api-version: 1.19

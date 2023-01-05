@@ -17,6 +17,13 @@ public class CloudNetAdapter {
     }
 
     /**
+     * @return Name of the task of the current service
+     */
+    public String getServerTaskName(){
+        return Wrapper.getInstance().getServiceId().getTaskName();
+    }
+
+    /**
      * Send a player to the least full lobby
      * @param player Player to connect
      */
