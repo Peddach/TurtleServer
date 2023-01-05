@@ -34,7 +34,7 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
             return false;
         }
         if (args.length < 1) {
-            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Argumente: copy, load, save", NamedTextColor.GRAY));
+            TurtleServer.getInstance().getMessageUtil().sendMessage(sender, Component.text("Argumente: copy, load, save, deleteDB, deleteLocal, list, tp, generate", NamedTextColor.GRAY));
             return false;
         }
         if (args[0].equalsIgnoreCase("list")) {
