@@ -220,6 +220,8 @@ public class WorldManager {
                 outZip.extractAll(finalWorldDir.getCanonicalPath());
                 outZip.close();
                 outZip.getFile().delete();
+                File playerdata = new File(finalWorldDir, "playerdata");    //recreate playerdata directory, because IOException from MC-Server when not exists
+                playerdata.mkdirs();
                 TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + record.id() + ".zip");
                 if (!load) {
                     future.complete(null);
