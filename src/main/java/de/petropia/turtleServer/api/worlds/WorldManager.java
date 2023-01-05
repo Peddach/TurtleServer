@@ -338,4 +338,32 @@ public class WorldManager {
         }).start();
         return boolfuture;
     }
+
+    /**
+     * Links two dimensions together
+     * @param overworld Overworld
+     * @param endOrNether Other Dimension
+     */
+    public static void linkWorlds(World overworld, World endOrNether){
+        if(endOrNether.getEnvironment() == World.Environment.NETHER){
+            UserChangeWorldListener.linkWorldNether(overworld, endOrNether);
+        }
+        if(endOrNether.getEnvironment() == World.Environment.THE_END) {
+            UserChangeWorldListener.linkWorldEnd(overworld, endOrNether);
+        }
+    }
+
+    /**
+     * Unlinks two dimensions
+     * @param overworld Overworld
+     * @param endOrNether Other Dimension
+     */
+    public static void unlinkWorlds(World overworld, World endOrNether){
+        if(endOrNether.getEnvironment() == World.Environment.NETHER){
+            UserChangeWorldListener.removeLinkNether(overworld, endOrNether);
+        }
+        if(endOrNether.getEnvironment() == World.Environment.THE_END) {
+            UserChangeWorldListener.removeLinkEnd(overworld, endOrNether);
+        }
+    }
 }

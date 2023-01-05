@@ -147,7 +147,7 @@ public class WorldCommand implements CommandExecutor, TabExecutor {
                                     newWorld.setSpawnLocation(newSpawn);
                                 }
                             });
-                        }, 5 * 20);
+                        }, 20);
                     });
                 });
             } catch (ZipException e) {

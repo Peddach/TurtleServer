@@ -2,6 +2,7 @@ package de.petropia.turtleServer.server;
 
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.chatInput.ChatInputListener;
+import de.petropia.turtleServer.api.worlds.UserChangeWorldListener;
 import de.petropia.turtleServer.api.worlds.WorldDatabase;
 import de.petropia.turtleServer.api.worlds.WorldManager;
 import de.petropia.turtleServer.server.commandBlocker.CommandBlocker;
@@ -66,6 +67,7 @@ public class TurtleServer extends PetropiaPlugin {
         this.getCommand("stats").setExecutor(new StatsCommand());
         this.getCommand("world").setExecutor(new WorldCommand());
         this.getCommand("player").setTabCompleter(new PlayerCommand());
+        this.getCommand("world").setTabCompleter(new WorldCommand());
     }
 
     private void registerListeners() {
@@ -78,6 +80,7 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new ChatInputListener(), this);
         manager.registerEvents(new ServerShutdownListener(), this);
         manager.registerEvents(new StatsGuiListener(), this);
+        manager.registerEvents(new UserChangeWorldListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
