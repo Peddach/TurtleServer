@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class WorldManager {
@@ -207,23 +204,24 @@ public class WorldManager {
         final CompletableFuture<World> future = new CompletableFuture<>();
         WorldDatabase.loadWorldFromDB(id).thenAccept(record -> {
             try {
+                String zipName = generateRandomString() + "_" + record.id();
                 File tmpDir = new File(TurtleServer.getInstance().getDataFolder(), "tempWorlds");
-                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Load world " + record.id() + " from DB");
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Load world " + record.id() + " from DB to " + zipName);
                 tmpDir.mkdirs();
-                File outDir = new File(tmpDir, record.id() + ".zip");
+                File outDir = new File(tmpDir, zipName + ".zip");
                 outDir.createNewFile();
                 FileOutputStream fileOutputStream = new FileOutputStream(outDir);
                 fileOutputStream.write(record.data());
                 fileOutputStream.close();
-                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + record.id());
-                ZipFile outZip = new ZipFile(new File(tmpDir, record.id() + ".zip"));
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Unzip " + zipName);
+                ZipFile outZip = new ZipFile(new File(tmpDir, zipName + ".zip"));
                 File finalWorldDir = new File(Bukkit.getWorldContainer(), loadedName);
                 outZip.extractAll(finalWorldDir.getCanonicalPath());
                 outZip.close();
                 outZip.getFile().delete();
+                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + zipName + ".zip");
                 File playerdata = new File(finalWorldDir, "playerdata");    //recreate playerdata directory, because IOException from MC-Server when not exists
                 playerdata.mkdirs();
-                TurtleServer.getInstance().getMessageUtil().showDebugMessage("Deleted " + record.id() + ".zip");
                 if (!load) {
                     future.complete(null);
                     return;
@@ -373,5 +371,9 @@ public class WorldManager {
         if(endOrNether.getEnvironment() == World.Environment.THE_END) {
             UserChangeWorldListener.removeLinkEnd(overworld, endOrNether);
         }
+    }
+
+    private static String generateRandomString(){
+        return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6);
     }
 }
