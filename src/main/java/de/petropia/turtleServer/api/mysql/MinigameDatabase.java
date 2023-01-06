@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLDatabase {
+public class MinigameDatabase {
 
     private final PetropiaPlugin plugin;
 
@@ -23,13 +23,13 @@ public class SQLDatabase {
     private final String password;
 
 
-    public SQLDatabase(PetropiaPlugin plugin) {
+    public MinigameDatabase(PetropiaPlugin plugin) {
         this.plugin = plugin;
-        address = plugin.getConfig().getString("Database.Address");
-        port = plugin.getConfig().getString("Database.Port");
-        name = plugin.getConfig().getString("Database.Name");
-        username = plugin.getConfig().getString("Database.Username");
-        password = plugin.getConfig().getString("Database.Password");
+        address = plugin.getConfig().getString("MinigameDatabase.Address");
+        port = plugin.getConfig().getString("MinigameDatabase.Port");
+        name = plugin.getConfig().getString("MinigameDatabase.Name");
+        username = plugin.getConfig().getString("MinigameDatabase.Username");
+        password = plugin.getConfig().getString("MinigameDatabase.Password");
     }
 
     private Connection getConnection(){

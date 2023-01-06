@@ -3,6 +3,7 @@ main: de.petropia.turtleServer.server.TurtleServer
 authors: [Professor_Sam, Jetztmachtsbumm]
 version: ${project.version}
 description: "Core system of petropia.de"
+load: "STARTUP"
 depend:
   - "LuckPerms"
 api-version: 1.19
@@ -13,6 +14,8 @@ commands:
     description: "Access turtleServer internals"
   stats:
     description: "Show your stats"
+  world:
+    description: "Manage worlds from db"
 permissions:
   TurtleServer.debug:
     description: "Allow player to see debug message"
@@ -20,3 +23,5 @@ permissions:
     description: "Use command to access TurtleServer internals"
   TurtleServer.bypass.commandblock:
     description: "Bypass command ristriction"
+  TurtleServer.WorldCommand:
+    description: "Save and Load/Copy worlds"

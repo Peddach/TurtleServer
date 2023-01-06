@@ -6,5 +6,16 @@ Database:
   Password: password
   Hostname: 127.0.0.1
   Port: 27017
+WorldDatabase:
+  User: World
+  Password: Password
+  Database: Worlds
+  Hostname: localhost
+  Port: 3306
 BlockedCommands:
   - "plugins;jajajaja"
+ChunkGenBuffer: 10
+DefaultWorldOverride:
+  - "Lobby:Hub_Spawn"
+  - "Bingo:Bingo_Spawn"
+  - "ChickenLeague:Cl_Spawn"
