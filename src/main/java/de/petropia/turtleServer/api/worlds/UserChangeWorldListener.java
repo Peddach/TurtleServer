@@ -8,6 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class UserChangeWorldListener implements Listener {
 
     private static final HashMap<World, World> WORLD_LINK_MAP_NETHER = new HashMap<>();
@@ -34,9 +38,10 @@ public class UserChangeWorldListener implements Listener {
     }
 
     private void removeFromHashmap(HashMap<World, World> map, World remove){
-        map.forEach((key, value) -> {
-            if (key.equals(remove) || value.equals(remove)) {
-                map.remove(key);
+        Set<Map.Entry<World, World>> entries = new HashSet<>(map.entrySet());
+        entries.forEach(entry -> {
+            if(entry.getKey().equals(remove) || (entry.getValue().equals(remove))){
+                map.remove(entry.getKey(), entry.getValue());
             }
         });
     }

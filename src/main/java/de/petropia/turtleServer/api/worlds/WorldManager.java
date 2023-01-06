@@ -148,6 +148,7 @@ public class WorldManager {
         }
         World.Environment worldEnv = world.getEnvironment();
         String worldName = world.getName();
+        TurtleServer.getInstance().getLogger().info("Copy world " + worldName + " to " + newWorld);
         Bukkit.unloadWorld(world, true);
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
             File regionDir = new File(world.getWorldFolder(), "region");
@@ -258,8 +259,12 @@ public class WorldManager {
         final File worldDir = world.getWorldFolder();
         if (!Bukkit.unloadWorld(world, false)) {
             TurtleServer.getInstance().getMessageUtil().showDebugMessage("Cant unload world: " + world.getName());
+            TurtleServer.getInstance().getMessageUtil().showDebugMessage("Forcing to delete world: " + world.getName());
         }
-        Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> deleteRecursive(worldDir));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(TurtleServer.getInstance(), () -> {
+            TurtleServer.getInstance().getLogger().info("Deleting world " + world.getName());
+            deleteRecursive(worldDir);
+        }, 3*20);    //Add 3 sec delay, cause Bukkit unloading is weird
     }
 
     public static void deleteDatabaseWorld(String id) {
@@ -353,6 +358,7 @@ public class WorldManager {
         if(endOrNether.getEnvironment() == World.Environment.THE_END) {
             UserChangeWorldListener.linkWorldEnd(overworld, endOrNether);
         }
+        TurtleServer.getInstance().getLogger().info("Linked worlds " + overworld.getName() + " and " + endOrNether.getName());
     }
 
     /**
