@@ -1,7 +1,5 @@
 package de.petropia.turtleServer.api;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import de.petropia.turtleServer.api.arena.Arena;
 import de.petropia.turtleServer.api.mysql.MinigameDatabase;
 import org.bukkit.entity.Player;
@@ -19,7 +17,6 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
 
     private int maxPlayers;
     private int requiredPlayersForStart;
-    private MVWorldManager worldManager;
 
     @Override
     public void onEnable() {
@@ -36,9 +33,6 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
         minigameDatabase.deleteRemainingData();
         minigameDatabase.createArenasTable();
         minigameDatabase.createJoiningPlayersTable();
-
-        MultiverseCore mvCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
-        worldManager = mvCore.getMVWorldManager();
     }
 
     @Override
@@ -110,9 +104,5 @@ public abstract class PetropiaMinigame extends PetropiaPlugin{
 
     public Hashtable<Player, Arena> getPlayerArenas() {
         return playerArenas;
-    }
-
-    public MVWorldManager getWorldManager() {
-        return worldManager;
     }
 }

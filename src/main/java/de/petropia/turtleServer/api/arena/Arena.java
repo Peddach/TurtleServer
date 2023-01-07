@@ -3,6 +3,7 @@ package de.petropia.turtleServer.api.arena;
 import de.petropia.turtleServer.api.PetropiaMinigame;
 import de.petropia.turtleServer.api.arena.gamestate.GameState;
 import de.petropia.turtleServer.api.countdowns.GameStartCountdown;
+import de.petropia.turtleServer.api.worlds.WorldManager;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
@@ -54,7 +55,7 @@ public abstract class Arena {
         for(Player player : players){
             PetropiaMinigame.getPlugin().getCloudNetAdapter().sendPlayerToLobby(player);
         }
-        PetropiaMinigame.getPlugin().getWorldManager().deleteWorld(world.getName());
+        WorldManager.deleteLocalWorld(world);
         PetropiaMinigame.getPlugin().getMinigameDatabase().deleteArena(this);
         PetropiaMinigame.getPlugin().getArenas().remove(this);
     }

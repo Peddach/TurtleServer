@@ -30,10 +30,6 @@
             <id>cloudnet-releases</id>
             <url>https://repo.cloudnetservice.eu/repository/releases/</url>
         </repository>
-        <repository>
-            <id>OnARandomBox</id>
-            <url>https://repo.onarandombox.com/content/groups/public/</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -90,12 +86,6 @@
                     <artifactId>protobuf-java</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>4.3.1</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
