@@ -16,16 +16,15 @@ import java.util.Random;
 public abstract class Arena {
 
     private final String name;
-    protected final World world;
     private final List<Player> players = new ArrayList<>();
+    protected World world;
     private GameState state;
     private GameStartCountdown gameStartCountdown;
 
     public Arena() {
         name = getRandomName();
-        world = setWorld();
         state = GameState.STARTING;
-        init();
+        loadWorld();
         updateArena();
         PetropiaMinigame.getPlugin().getArenas().add(this);
     }
@@ -37,7 +36,7 @@ public abstract class Arena {
     /**
      * Sets the world of the arena. Is implemented in the child class
      */
-    protected abstract World setWorld();
+    protected abstract void loadWorld();
     //Initializes the arena
     protected abstract void init();
 
