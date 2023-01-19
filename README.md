@@ -1,7 +1,18 @@
-# TurtleServer
+## TurtleServer
+
+### Table of Content:
+
+- [Was ist TurtleServer](#was-ist-turtleserver)
+- [World Management](#world-management)
+- [Chateingabe](#chateingabe)
+- [Petropia Plugin](#petropia-plugin)
+- [Zeit](#zeit)
+- [Spielerdaten](#spielerdaten)
+- [CloudNet](#cloudnet)
+- [Prefixe](#prefixe--wip-)
 
 ### Was ist TurtleServer
-Turtle Server ist der Kern des Petropia.de Netzwerkes und ist vereint mehrfach wiederverwendete 
+TurtleServer ist der Kern des Petropia.de Netzwerkes und ist vereint mehrfach wiederverwendete 
 Methoden und Klassen und verwaltet Spielerdaten.
 
 ### World Management
@@ -20,9 +31,9 @@ https://www.baeldung.com/java-completablefuture. Aktuell sind folgende Funktione
 - Welten asynchron vorgenerieren
 - Welten linken (z.B. Netherportal in Welt x für zu Welt y und umgekehrt)
 
-#### Namenskonvention
+#### Namenskonvention:
 Jede Welt hat eine eindeutige ID. Diese folgt folgenden Schema für Spielmodies:
-**PREFIX_NAME** <br> Der Prfix ist für Spielmodies der Name des Modus und für die restlichen, 
+**PREFIX_NAME** <br> Der Prefix ist für Spielmodies der Name des Modus und für die restlichen, 
 wie z.B. der Hub nur "Hub". Wenn der Name des Spielmodus kürzer als 6 Buchstagen ist und 
 zusammengeschrieben, wird der volle Name als Prefix genutzt. Wenn der name länger ist und/oder 
 Leerzeichen enthält, wird er abgekürzt. Im Folgenden sind alle aktuellen Spielmodies und deren Prefixe:
@@ -60,10 +71,7 @@ mit ``onCancel`` und einer Runnable als Argument.
 
 #### Beispiel:
 
-````java
-import de.petropia.turtleServer.api.chatInput.ChatInputBuilder;
-import net.kyori.adventure.text.Component;
-
+```java
 public class ExampleInput {
     public chatInputExample(Player player) {
         Component message = Component.text("Bitte gib den Preis an");
@@ -74,6 +82,102 @@ public class ExampleInput {
                 .build();   //Nicht vergessen!!!
     }
 }
-````
+```
 
 ### Petropia Plugin
+#### Erklärung:
+Anstelle des ``JavaPlugin``s welches Bukkit bereitstellt wird eine Subcass namens 
+``PetropiaPlugin`` welches TurtleServer bereitstellt und das ``JavaPlugin`` extendet genutzt. Diese 
+Subclass stellt die Methode ``PetropiaPlugin.getMessageUtil`` zur verfügung. Hiermit werden 
+Nachrichten in der standartisierten Formatierung an einen Spieler gesendet. Die meisten Methoden 
+nutzten sogenannte Components, welcher aus Kyori's Adventure Libary stammen. Weitere 
+Informationen dazu können hier gefunden werden: https://docs.adventure.kyori.net.
+
+#### Beispiel:
+
+```java
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+
+public class ExampleMessage {
+    public void errorMessage(Player player) {
+        Component message = Component.text("Dein Name ist ")
+                .color(NamedTextColor.GRAY)
+                .append(Component.text(player.name()).color(NamedTextColor.RED));
+        ExamplePlugin.getInstance().getMessageUtil().sendMessage(player, message);
+    }
+}
+```
+
+### Zeit
+#### Erklärung:
+Es gibt ebenfalls eine Klasse namens ``TimeUtil``, welche es erlaubt einen unix timestamp in ein 
+für Menschen lesbaren String umzuwandeln im format ***dd.MM.yyyy HH:mm*** und Sekunden in einen 
+String mit Tagen, Stunden, Minuten und Sekunden umzuwandeln
+#### Beispiel:
+
+```java
+public class ExampleTime {
+    public void time() {
+        String readableDate = TimeUtil.unixTimestampToString(Instant.now().getEpochSecond());
+        String readableTime = TimeUtil.formatSeconds(99999);
+    }
+}
+```
+### Spielerdaten
+#### Erklärung:
+TurtleServer speichert Spielerdaten als Json Dokument in MongoDB. Das Json Dokument wird dann 
+mithilfe des ORMs Morphia auf die Klasse PetropiaPlayer gemaped. Der PetropiaPlayer enthält 
+verschiedene Daten wie z.B. Spielernamen, UUID, Namenshistorie (wird nicht vollständig sein, wenn 
+spieler nicht online war mit geänderten Namen), skinTextur/Signatur, onlinestatus, akuteller 
+Server, letzter Server (wenn offline), stats, uvm. Spielerdaten können mithilfe der Instanz des 
+MongoDBHandlers abgefragt werden. Sollte ein Spieler auf den lokalen Server online sein, wird 
+dieser im Cache gespeichert und somit kann auf ihn im selben Tick zugeriffen werden. Sollte der 
+Spieler nicht auf dem aktuellen Server online sein, so kann dieser geladen werden mithilfe der 
+UUID oder optionaler (aber nicht ratsamer) Weise mithilfe des Namens abgefragt werden. Der 
+MongoDBHandler gibt somit ein CompletableFuture zuück mit dem PetropiaPlayer, welches completed 
+wird, sobald der PetropiaPlayer geladen wurde.
+
+#### Beispiel:
+
+```java
+public class ExamplePlayer {
+    public void logPlayerName(String uuid) {
+        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(uuid)
+                .thenAccept(petropiaPlayer -> {
+                    String name = petropiaPlayer.getUserName();
+                    YourPlugin.getInstance().getLogger().info("Name: " + name);
+        });
+    }
+}
+```
+### CloudNet
+#### Erklärung
+TurtleServer bietet einen einfachen Wrapper für Metadaten des aktuellen Services und um Spieler 
+mit der Lobby oder anderen Servern zu verbinden.
+
+#### Beispiel:
+
+```java
+import de.petropia.turtleServer.server.TurtleServer;
+
+public class ExampleCL {
+    public void cloudNetExample(Player player) {
+        String serviceName = TurtleServer.getInstance().getCloudNetAdapter().getServerInstanceName();
+        String taskName = TurtleServer.getInstance().getCloudNetAdapter().getServerTaskName();
+        TurtleServer.getInstance().getCloudNetAdapter().sendPlayerToLobby(player);
+    }
+}
+```
+
+### Prefixe (WIP)
+#### Erklärung:
+Custom Prefixe sind geplant. Jedoch kann man sie mit dem aktuellen System wie folgt deaktivieren
+#### Beispiel:
+````java
+public class ExamplePrefix {
+    public void prefixOff(){
+        PrefixManager.getInstance().getPrefixGroups().forEach(prefixGroup -> prefixGroup.getTeam().setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER));
+    }
+}
+````
