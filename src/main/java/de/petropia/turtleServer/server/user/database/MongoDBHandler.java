@@ -91,12 +91,17 @@ public class MongoDBHandler {
     public CompletableFuture<PetropiaPlayer> getPetropiaPlayerByUsername(String username) {
         CompletableFuture<PetropiaPlayer> playerCompletableFuture = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(TurtleServer.getInstance(), () -> {
-            if (petropiaPlayerNameCache.contains(username)) {
-                playerCompletableFuture.complete(petropiaPlayerNameCache.get(username));
+            if (petropiaPlayerNameCache.contains(username.toLowerCase())) {
+                playerCompletableFuture.complete(petropiaPlayerNameCache.get(username.toLowerCase()));
                 return;
             }
             PetropiaPlayer player = null;
-            List<PetropiaPlayer> playerQuery = datastore.find(PetropiaPlayer.class).filter(Filters.eq("userName", username)).stream().toList();
+            //<PetropiaPlayer> playerQuery = datastore.find(PetropiaPlayer.class).filter(Filters.eq("userName", username)).stream().toList();
+            List<PetropiaPlayer> playerQuery = datastore.find(PetropiaPlayer.class)
+                    .filter(Filters.regex("userName").caseInsensitive().pattern(username))
+                    .stream()
+                    .toList();
+
             if (playerQuery.size() == 1) {
                 player = playerQuery.get(0);
             }
@@ -163,7 +168,7 @@ public class MongoDBHandler {
      */
     public void unCachePlayer(PetropiaPlayer player) {
         petropiaPlayerUUIDCache.remove(player.getUuid());
-        petropiaPlayerNameCache.remove(player.getUserName());
+        petropiaPlayerNameCache.remove(player.getUserName().toLowerCase());
     }
 
     /**
@@ -177,7 +182,7 @@ public class MongoDBHandler {
             petropiaPlayerUUIDCache.put(player.getUuid(), player);
         }
         if (!petropiaPlayerNameCache.containsValue(player)) {
-            petropiaPlayerNameCache.put(player.getUserName(), player);
+            petropiaPlayerNameCache.put(player.getUserName().toLowerCase(), player);
         }
     }
 }
