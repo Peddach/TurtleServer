@@ -15,7 +15,6 @@ import de.petropia.turtleServer.server.prefix.listener.AsyncChatListener;
 import de.petropia.turtleServer.server.prefix.listener.LuckpermsGroupUpdateListener;
 import de.petropia.turtleServer.server.prefix.listener.PlayerJoinListener;
 import de.petropia.turtleServer.server.prefix.listener.PlayerLeaveListener;
-import de.petropia.turtleServer.server.stats.StatsGuiListener;
 import de.petropia.turtleServer.server.user.database.MongoDBHandler;
 import de.petropia.turtleServer.server.user.database.listener.OnPlayerJoinListener;
 import de.petropia.turtleServer.server.user.database.listener.ServerShutdownListener;
@@ -79,7 +78,6 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new CommandBlocker(), this);
         manager.registerEvents(new ChatInputListener(), this);
         manager.registerEvents(new ServerShutdownListener(), this);
-        manager.registerEvents(new StatsGuiListener(), this);
         manager.registerEvents(new UserChangeWorldListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);

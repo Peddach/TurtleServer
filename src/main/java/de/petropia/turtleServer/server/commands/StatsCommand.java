@@ -2,6 +2,7 @@ package de.petropia.turtleServer.server.commands;
 
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.stats.StatsGui;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +16,7 @@ public class StatsCommand implements CommandExecutor {
         if(!(sender instanceof Player player)){
             return false;
         }
-        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(player.getUniqueId().toString()).thenAccept(StatsGui::new);
+        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(player.getUniqueId().toString()).thenAccept(p -> Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> new StatsGui(p, player)));
         return false;
     }
 }
