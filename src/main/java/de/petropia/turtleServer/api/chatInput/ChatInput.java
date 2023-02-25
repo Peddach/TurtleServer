@@ -4,6 +4,7 @@ import de.petropia.turtleServer.api.util.SoundUtil;
 import de.petropia.turtleServer.server.TurtleServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -38,7 +39,7 @@ public class ChatInput {
      */
     public void cancel(boolean executeOnCancel){
         if(executeOnCancel && onCancel != null){
-            onCancel.run();
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), onCancel);
         }
         ChatInputListener.unregisterChatinput(player);
     }
@@ -51,7 +52,7 @@ public class ChatInput {
     public boolean input (String input){
         if(input.equalsIgnoreCase("Abbrechen")){
             if(onCancel != null){
-                onCancel.run();
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), onCancel);
             }
             return true;
         }
@@ -75,9 +76,9 @@ public class ChatInput {
                     return false;
                 }
             }
-            onInputInt.accept(convertToInteger(input));
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> onInputInt.accept(convertToInteger(input)));
             if(onInputDbl != null){
-                onInputDbl.accept((double) convertToInteger(input));
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> onInputDbl.accept((double) convertToInteger(input)));
             }
             return true;
         }
@@ -101,11 +102,11 @@ public class ChatInput {
                     return false;
                 }
             }
-            onInputDbl.accept(convertToDouble(input));
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> onInputDbl.accept(convertToDouble(input)));
             return true;
         }
         if(onInputStr != null){
-            onInputStr.accept(input);
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> onInputStr.accept(input));
             return true;
         }
         return true;
