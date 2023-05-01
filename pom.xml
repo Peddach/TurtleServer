@@ -17,7 +17,7 @@
     <distributionManagement>
         <repository>
             <id>petropia</id>
-            <url>https://repo.petropia.de/releases</url>
+            <url>https://repo.petropia.net/releases</url>
         </repository>
     </distributionManagement>
 
