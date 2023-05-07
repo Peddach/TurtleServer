@@ -9,7 +9,8 @@
 - [Zeit](#zeit)
 - [Spielerdaten](#spielerdaten)
 - [CloudNet](#cloudnet)
-- [Prefixe](#prefixe--wip-)
+- [Minigames](#minigames)
+- [Prefixe](#prefixe-wip)
 
 ### Was ist TurtleServer
 TurtleServer ist der Kern des Petropia.de Netzwerkes und ist vereint mehrfach wiederverwendete 
@@ -169,8 +170,34 @@ public class ExampleCL {
     }
 }
 ```
+### Minigames
+#### Erklärung
+Minigames können verschiedene utility Klassen nutzen wie z.B. die GameState um den aktuellen 
+Status des Spiels zu beschreiben oder GameMode um die Spieleranzahl pro Team zu beschreiben. 
+***Wichtig:*** Jedes Minigame sollte seine Arena über den CloudNetAdapter registrieren, updaten 
+und löschen, sowie auf das ArenaUpdateResendRequestEvent um beim starten eines neuen Hubs ihre 
+Arenen diesen neuen Hub mitzuteilen!
+#### Beispiel:
 
-### Prefixe (WIP)
+```java
+import de.petropia.turtleServer.api.minigame.GameState;
+
+public class MinigameExample {
+    public void myMinigameMethod(){
+        //Arena update
+        MyPlugin.getInstance().getCloundNetAdapter().publishArenaUpdate("Bingo",arg, arg...);
+        //Arena delete
+        MyPlugin.getInstance().getCloundNetAdapter().publishArenaDelete("iuhjijwad","server-1");
+        //Gamestate
+        GameState.STARTING;
+        GameState.WAITING;
+        //Gamemode
+        GameMode.SINGLE;
+        GameMode.DUO;
+    }
+}
+```
+### Prefixe WIP
 #### Erklärung:
 Custom Prefixe sind geplant. Jedoch kann man sie mit dem aktuellen System wie folgt deaktivieren
 #### Beispiel:
