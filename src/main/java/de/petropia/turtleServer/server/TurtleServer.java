@@ -4,6 +4,7 @@ import de.dytanic.cloudnet.driver.CloudNetDriver;
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.chatInput.ChatInputListener;
 import de.petropia.turtleServer.api.minigame.ArenaUpdateListener;
+import de.petropia.turtleServer.api.minigame.PlayerJoinGameRequestChannelListener;
 import de.petropia.turtleServer.api.worlds.UserChangeWorldListener;
 import de.petropia.turtleServer.api.worlds.WorldDatabase;
 import de.petropia.turtleServer.api.worlds.WorldManager;
@@ -83,6 +84,7 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new UserChangeWorldListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
         CloudNetDriver.getInstance().getEventManager().registerListeners(new ArenaUpdateListener());
+        CloudNetDriver.getInstance().getEventManager().registerListeners(new PlayerJoinGameRequestChannelListener());
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
 

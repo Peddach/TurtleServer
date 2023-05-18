@@ -7,10 +7,13 @@ import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import de.dytanic.cloudnet.wrapper.Wrapper;
 import de.petropia.turtleServer.api.minigame.GameMode;
 import de.petropia.turtleServer.api.minigame.GameState;
+import de.petropia.turtleServer.server.TurtleServer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class CloudNetAdapter {
 
@@ -18,6 +21,9 @@ public class CloudNetAdapter {
     private static final String ARENA_UPDATE_MESSAGE = "ArenaUpdate";
     private static final String ARENA_DELETE_MESSAGE = "ArenaDelete";
     private static final String ARENA_UPDATE_RESEND_REQUEST = "ArenaUpdateResend";
+    private static final String PLAYER_JOIN_GAME_QUERY_MESSAGE = "PlayerJoinGameQuery";
+    private static final String PLAYER_JOIN_GAME_QUERY_CHANNEL = "minigames_join";
+
 
     /**
      * @return Name of minecraft server instance (ex. Lobby-1)
@@ -45,6 +51,40 @@ public class CloudNetAdapter {
     public void sendPlayerToServer(Player player, String server){
         IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
         playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect(server);
+    }
+
+    /**
+     * Add a player to a remote Arena
+     *
+     * @param player Player to add
+     * @param gameID Game id
+     * @param server Server of arena
+     * @return CompletableFuture with boolean if successfull = true
+     */
+    public CompletableFuture<Boolean> joinPlayerGame(Player player, String gameID, String server){
+        JsonDocument jsonDocument = JsonDocument.newDocument()
+                .append("player", player.getUniqueId().toString())
+                .append("id", gameID)
+                .append("server", server);
+        return CompletableFuture.supplyAsync(() -> {
+            ChannelMessage response =  ChannelMessage.builder()
+                    .targetService(server)
+                    .channel(PLAYER_JOIN_GAME_QUERY_CHANNEL)
+                    .message(PLAYER_JOIN_GAME_QUERY_MESSAGE)
+                    .json(jsonDocument)
+                    .build()
+                    .sendSingleQuery();
+            if(response == null || response.getJson().isEmpty() || !response.getJson().contains("success")) {
+                TurtleServer.getInstance().getLogger().warning("Query to server " + server + " failed for joining Player " + player.getName() + "!");
+                return false;
+            }
+            boolean success = response.getJson().getBoolean("success");
+            if(!success){
+                return false;
+            }
+            Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> sendPlayerToServer(player, server));
+            return true;
+        });
     }
 
     public void publishArenaUpdate(String game, String id, GameMode mode, int maxPlayers, GameState gameState, List<Player> players) {
@@ -105,8 +145,14 @@ public class CloudNetAdapter {
     public static String getArenaUpdateMessage() {
         return ARENA_UPDATE_MESSAGE;
     }
-
     public static String getArenaUpdateResendRequestMessage() {
         return ARENA_UPDATE_RESEND_REQUEST;
+    }
+    public static String getPlayerJoinGameQueryMessage(){
+        return PLAYER_JOIN_GAME_QUERY_MESSAGE;
+    }
+
+    public static String getPlayerJoinGameQueryChannel(){
+        return PLAYER_JOIN_GAME_QUERY_CHANNEL;
     }
 }
