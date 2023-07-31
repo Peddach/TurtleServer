@@ -43,7 +43,7 @@ public class ArenaUpdateListener {
                 GameState state = GameState.valueOf(json.getString("gameState"));
                 List<UUID> playerUUID = parsePlayerUUIDs(json.getString("playerUUIDs"));
                 String server = json.getString("server");
-                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpateEvent(id, game, mode, maxPlayers, playerCount, state, playerUUID, server)));
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpateEvent(id, game, mode, playerCount, maxPlayers, state, playerUUID, server)));
             }
             if(event.getMessage().equals(CloudNetAdapter.getArenaUpdateResendRequestMessage())){
                 Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpdateResendRequestEvent()));
