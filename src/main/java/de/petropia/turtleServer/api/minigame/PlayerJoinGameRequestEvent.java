@@ -46,5 +46,7 @@ public class PlayerJoinGameRequestEvent extends Event {
         return HANDLER_LIST;
     }
 
-
+    public static HandlerList getHandlerList(){
+        return HANDLER_LIST;
+    }
 }

@@ -27,4 +27,8 @@ public class ArenaDeleteEvent extends Event {
     public @NotNull HandlerList getHandlers() {
         return HANDLER_LIST;
     }
+
+    public static HandlerList getHandlerList(){
+        return HANDLER_LIST;
+    }
 }

@@ -54,8 +54,11 @@ public class ArenaUpateEvent extends Event {
         return gameMode;
     }
 
-    @Override
-    public @NotNull HandlerList getHandlers() {
+   public static HandlerList getHandlerList(){
+        return HANDLER_LIST;
+   }
+   @Override
+   public @NotNull HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 }

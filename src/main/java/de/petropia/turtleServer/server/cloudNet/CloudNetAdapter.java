@@ -130,7 +130,9 @@ public class CloudNetAdapter {
 
     private String convertToUuidList(List<Player> playerList){
         StringBuilder players = new StringBuilder();
-        for (Player player : playerList) players.append(" ").append(player.getUniqueId());
+        for (Player player : playerList) {
+            players.append(",").append(player.getUniqueId());
+        }
         return players.toString();
     }
 
