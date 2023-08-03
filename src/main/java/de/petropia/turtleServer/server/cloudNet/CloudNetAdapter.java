@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 public class CloudNetAdapter {
 
@@ -23,6 +25,7 @@ public class CloudNetAdapter {
     private static final String ARENA_UPDATE_RESEND_REQUEST = "ArenaUpdateResend";
     private static final String PLAYER_JOIN_GAME_QUERY_MESSAGE = "PlayerJoinGameQuery";
     private static final String PLAYER_JOIN_GAME_QUERY_CHANNEL = "minigames_join";
+    private static BiFunction<String, UUID, Boolean> joinRequestResolver = (str, uuid) -> false;
 
 
     /**
@@ -53,6 +56,14 @@ public class CloudNetAdapter {
         playerManager.getPlayerExecutor(Objects.requireNonNull(playerManager.getOnlinePlayer(player.getUniqueId()))).connect(server);
     }
 
+    public void setJoinRequestResolver(BiFunction<String, UUID, Boolean> func){
+        joinRequestResolver = func;
+    }
+
+    public BiFunction<String, UUID, Boolean> getJoinRequestResolver() {
+        return joinRequestResolver;
+    }
+
     /**
      * Add a player to a remote Arena
      *
@@ -74,8 +85,12 @@ public class CloudNetAdapter {
                     .json(jsonDocument)
                     .build()
                     .sendSingleQuery();
-            if(response == null || response.getJson().isEmpty() || !response.getJson().contains("success")) {
-                TurtleServer.getInstance().getLogger().warning("Query to server " + server + " failed for joining Player " + player.getName() + "!");
+            if(response == null){
+                TurtleServer.getInstance().getLogger().warning("Query to server " + server + " failed for joining Player " + player.getName() + " -> Response null");
+                return false;
+            }
+            if(response.getJson().isEmpty() || !response.getJson().contains("success")) {
+                TurtleServer.getInstance().getLogger().warning("Query to server " + server + " failed for joining Player " + player.getName() + "! -> Json error: " + response.getJson().toJson());
                 return false;
             }
             boolean success = response.getJson().getBoolean("success");

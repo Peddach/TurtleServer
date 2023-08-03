@@ -23,6 +23,10 @@ public class ArenaUpdateListener {
             if(event.getMessage() == null){
                 return;
             }
+            if(event.getMessage().equals(CloudNetAdapter.getArenaUpdateResendRequestMessage())){
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpdateResendRequestEvent()));
+                return;
+            }
             if(event.getChannelMessage().getJson().isEmpty()){
                 TurtleServer.getInstance().getLogger().warning("Recived Empty Arena Update Message from " + event.getSender().getName());
                 return;
@@ -44,9 +48,6 @@ public class ArenaUpdateListener {
                 List<UUID> playerUUID = parsePlayerUUIDs(json.getString("playerUUIDs"));
                 String server = json.getString("server");
                 Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpateEvent(id, game, mode, playerCount, maxPlayers, state, playerUUID, server)));
-            }
-            if(event.getMessage().equals(CloudNetAdapter.getArenaUpdateResendRequestMessage())){
-                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpdateResendRequestEvent()));
             }
         }
 

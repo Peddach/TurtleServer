@@ -4,8 +4,8 @@ import de.dytanic.cloudnet.common.document.gson.JsonDocument;
 import de.dytanic.cloudnet.driver.channel.ChannelMessage;
 import de.dytanic.cloudnet.driver.event.EventListener;
 import de.dytanic.cloudnet.driver.event.events.channel.ChannelMessageReceiveEvent;
+import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
-import org.bukkit.Bukkit;
 
 import java.util.UUID;
 
@@ -30,11 +30,11 @@ public class PlayerJoinGameRequestChannelListener {
         }
         String id = event.getChannelMessage().getJson().getString("id");
         UUID player = UUID.fromString(event.getChannelMessage().getJson().getString("player"));
-        PlayerJoinGameRequestEvent gameRequestEvent = new PlayerJoinGameRequestEvent(id, player);
-        Bukkit.getPluginManager().callEvent(gameRequestEvent);
+        boolean success = TurtleServer.getInstance().getCloudNetAdapter().getJoinRequestResolver().apply(id, player);
         event.setQueryResponse(ChannelMessage.buildResponseFor(event.getChannelMessage())
                 .json(JsonDocument.newDocument()
-                        .append("success", gameRequestEvent.isSuccess()))
-                .build());
+                        .append("success", success))
+                        .build());
+
     }
 }
