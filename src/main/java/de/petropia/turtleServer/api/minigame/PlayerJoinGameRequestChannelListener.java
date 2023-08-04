@@ -1,11 +1,13 @@
 package de.petropia.turtleServer.api.minigame;
 
-import de.dytanic.cloudnet.common.document.gson.JsonDocument;
-import de.dytanic.cloudnet.driver.channel.ChannelMessage;
-import de.dytanic.cloudnet.driver.event.EventListener;
-import de.dytanic.cloudnet.driver.event.events.channel.ChannelMessageReceiveEvent;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
+import de.petropia.turtleServer.server.cloudNet.dto.JoinGameMessageDTO;
+import de.petropia.turtleServer.server.cloudNet.dto.JoinGameMessageResponseDTO;
+import eu.cloudnetservice.driver.channel.ChannelMessage;
+import eu.cloudnetservice.driver.event.EventListener;
+import eu.cloudnetservice.driver.event.events.channel.ChannelMessageReceiveEvent;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
 
 import java.util.UUID;
 
@@ -13,28 +15,23 @@ public class PlayerJoinGameRequestChannelListener {
 
     @EventListener
     public void onChannelMessage(ChannelMessageReceiveEvent event){
-        if(event.getMessage() == null){
+        if(!event.channel().equals(CloudNetAdapter.getPlayerJoinGameQueryChannel())){
             return;
         }
-        if(!event.getChannel().equals(CloudNetAdapter.getPlayerJoinGameQueryChannel())){
+        if(!event.message().equals(CloudNetAdapter.getPlayerJoinGameQueryMessage())){
             return;
         }
-        if(!event.getMessage().equals(CloudNetAdapter.getPlayerJoinGameQueryMessage())){
+        if(!event.query()){
             return;
         }
-        if(!event.isQuery()){
-            return;
-        }
-        if(event.getChannelMessage().getJson() == null || event.getChannelMessage().getJson().isEmpty()){
-            return;
-        }
-        String id = event.getChannelMessage().getJson().getString("id");
-        UUID player = UUID.fromString(event.getChannelMessage().getJson().getString("player"));
-        boolean success = TurtleServer.getInstance().getCloudNetAdapter().getJoinRequestResolver().apply(id, player);
-        event.setQueryResponse(ChannelMessage.buildResponseFor(event.getChannelMessage())
-                .json(JsonDocument.newDocument()
-                        .append("success", success))
-                        .build());
+        JoinGameMessageDTO joinGameMessageDTO = event.content().readObject(JoinGameMessageDTO.class);
 
+        String id = joinGameMessageDTO.id();
+        UUID player = joinGameMessageDTO.uuid();
+        boolean success = TurtleServer.getInstance().getCloudNetAdapter().getJoinRequestResolver().apply(id, player);
+        JoinGameMessageResponseDTO joinGameMessageResponseDTO = new JoinGameMessageResponseDTO(success);
+        event.queryResponse(ChannelMessage.buildResponseFor(event.channelMessage())
+                .buffer(DataBuf.empty().writeObject(joinGameMessageResponseDTO))
+                .build());
     }
 }

@@ -1,6 +1,5 @@
 package de.petropia.turtleServer.server;
 
-import de.dytanic.cloudnet.driver.CloudNetDriver;
 import de.petropia.turtleServer.api.PetropiaPlugin;
 import de.petropia.turtleServer.api.chatInput.ChatInputListener;
 import de.petropia.turtleServer.api.minigame.ArenaUpdateListener;
@@ -21,6 +20,8 @@ import de.petropia.turtleServer.server.prefix.listener.PlayerLeaveListener;
 import de.petropia.turtleServer.server.user.database.MongoDBHandler;
 import de.petropia.turtleServer.server.user.database.listener.OnPlayerJoinListener;
 import de.petropia.turtleServer.server.user.database.listener.ServerShutdownListener;
+import eu.cloudnetservice.driver.event.EventManager;
+import eu.cloudnetservice.driver.inject.InjectionLayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPermsProvider;
@@ -83,8 +84,11 @@ public class TurtleServer extends PetropiaPlugin {
         manager.registerEvents(new ServerShutdownListener(), this);
         manager.registerEvents(new UserChangeWorldListener(), this);
         manager.registerEvents(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener(), this);
-        CloudNetDriver.getInstance().getEventManager().registerListeners(new ArenaUpdateListener());
-        CloudNetDriver.getInstance().getEventManager().registerListeners(new PlayerJoinGameRequestChannelListener());
+        EventManager clManager = InjectionLayer.ext().instance(EventManager.class);
+        clManager.registerListeners(new ArenaUpdateListener());
+        clManager.registerListeners(new PlayerJoinGameRequestChannelListener());
+        clManager.registerListeners(new OnPlayerJoinListener());
+        clManager.registerListeners(new de.petropia.turtleServer.server.user.database.listener.PlayerLeaveListener());
         LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, new LuckpermsGroupUpdateListener()::onGroupUpdate);
     }
 

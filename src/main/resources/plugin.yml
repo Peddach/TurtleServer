@@ -6,6 +6,7 @@ description: "Core system of petropia.de"
 load: "STARTUP"
 depend:
   - "LuckPerms"
+  - "CloudNet-Bridge"
 api-version: 1.19
 commands:
   player:

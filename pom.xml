@@ -6,7 +6,7 @@
 
     <groupId>de.petropia</groupId>
     <artifactId>TurtleServer</artifactId>
-    <version>1.1.9</version>
+    <version>1.1.10</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -23,19 +23,48 @@
 
     <repositories>
         <repository>
+            <id>MavenRepo</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>cloudnet-releases</id>
-            <url>https://repo.cloudnetservice.eu/repository/releases/</url>
+            <id>repo</id>
+            <url>https://repo.mattstudios.me/artifactory/public/</url>
         </repository>
-            <repository>
-                <id>repo</id>
-                <url>https://repo.mattstudios.me/artifactory/public/</url>
-            </repository>
     </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>eu.cloudnetservice.cloudnet</groupId>
+                <artifactId>bom</artifactId>
+                <version>4.0.0-RC9</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>eu.cloudnetservice.cloudnet</groupId>
+            <artifactId>driver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.cloudnetservice.cloudnet</groupId>
+            <artifactId>bridge</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.cloudnetservice.cloudnet</groupId>
+            <artifactId>wrapper-jvm</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>fr.mrmicky</groupId>
             <artifactId>fastboard</artifactId> <!--https://github.com/MrMicky-FR/FastBoard -->
@@ -45,18 +74,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId> <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
             <version>2.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>de.dytanic.cloudnet</groupId>
-            <artifactId>cloudnet-wrapper-jvm</artifactId> <!-- https://cloudnetservice.eu/docs/3.4/api/start/ -->
-            <version>3.4.5-RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.dytanic.cloudnet</groupId>
-            <artifactId>cloudnet-bridge</artifactId> <!-- https://cloudnetservice.eu/docs/3.4/api/start/ -->
-            <version>3.4.5-RELEASE</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.morphia.morphia</groupId>
