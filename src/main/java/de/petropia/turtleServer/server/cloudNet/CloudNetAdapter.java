@@ -31,25 +31,20 @@ public class CloudNetAdapter {
     private static final String PLAYER_JOIN_GAME_QUERY_CHANNEL = "minigames_join";
     private static BiFunction<String, UUID, Boolean> joinRequestResolver = (str, uuid) -> false;
 
-    private final PlayerManager playerManager;
-    private final WrapperConfiguration wrapperConfiguration;
-    public CloudNetAdapter(){
-        this.playerManager = InjectionLayer.ext().instance(ServiceRegistry.class).firstProvider(PlayerManager.class);
-        this.wrapperConfiguration = InjectionLayer.ext().instance(WrapperConfiguration.class);
-    }
+    public CloudNetAdapter(){}
 
     /**
      * @return Name of minecraft server instance (ex. Lobby-1)
      */
     public String getServerInstanceName() {
-        return wrapperConfiguration.serviceInfoSnapshot().name();
+        return wrapperConfigurationInstance().serviceInfoSnapshot().name();
     }
 
     /**
      * @return Name of the task of the current service
      */
     public String getServerTaskName(){
-        return wrapperConfiguration.serviceInfoSnapshot().serviceId().taskName();
+        return wrapperConfigurationInstance().serviceInfoSnapshot().serviceId().taskName();
     }
 
     /**
@@ -57,11 +52,11 @@ public class CloudNetAdapter {
      * @param player Player to connect
      */
     public void sendPlayerToLobby(Player player) {
-        playerManager.playerExecutor(player.getUniqueId()).connectToFallback();
+        playerManagerInstance().playerExecutor(player.getUniqueId()).connectToFallback();
     }
 
     public void sendPlayerToServer(Player player, String serverName){
-        playerManager.playerExecutor(player.getUniqueId()).connect(serverName);
+        playerManagerInstance().playerExecutor(player.getUniqueId()).connect(serverName);
     }
 
     public void setJoinRequestResolver(BiFunction<String, UUID, Boolean> func){
@@ -153,6 +148,14 @@ public class CloudNetAdapter {
             players.append(",").append(player.getUniqueId());
         }
         return players.toString();
+    }
+
+    public PlayerManager playerManagerInstance(){
+        return InjectionLayer.ext().instance(ServiceRegistry.class).firstProvider(PlayerManager.class);
+    }
+
+    private WrapperConfiguration wrapperConfigurationInstance(){
+        return InjectionLayer.ext().instance(WrapperConfiguration.class);
     }
 
     public static String getArenaUpdateChannelName(){
