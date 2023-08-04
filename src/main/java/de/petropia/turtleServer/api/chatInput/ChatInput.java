@@ -164,7 +164,7 @@ public class ChatInput {
      */
     private boolean testForDouble(String string){
         try {
-            Long.parseLong(string);
+            Double.parseDouble(string);
             return true;
         } catch (NumberFormatException exception){
             return false;
@@ -178,9 +178,9 @@ public class ChatInput {
      */
     private double convertToDouble(String string){
         try{
-            return Long.parseLong(string);
+            return Double.parseDouble(string);
         } catch (NumberFormatException exception){
-            return 0L; //Won't ever be called if testForLong() is true;
+            return 0; //Won't ever be called if testForDouble() is true;
         }
     }
 

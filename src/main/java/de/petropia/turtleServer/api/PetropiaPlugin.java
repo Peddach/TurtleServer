@@ -9,16 +9,6 @@ public abstract class PetropiaPlugin extends JavaPlugin {
     private final MessageUtil messageUtil = new MessageUtil(this);
     private final CloudNetAdapter cloudNetAdapter = new CloudNetAdapter();
 
-    @Override
-    public void onEnable() {
-
-    }
-
-    @Override
-    public void onDisable() {
-
-    }
-
     /**
      * @deprecated Only for already integrated plugins. Use {@link PetropiaPlugin#getMessageUtil()} instead
      * @return current instance for Plugin
