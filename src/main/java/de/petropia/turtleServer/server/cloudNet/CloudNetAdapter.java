@@ -10,6 +10,7 @@ import de.petropia.turtleServer.server.cloudNet.dto.PublishArenaUpdateDTO;
 import eu.cloudnetservice.driver.channel.ChannelMessage;
 import eu.cloudnetservice.driver.inject.InjectionLayer;
 import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.provider.CloudServiceProvider;
 import eu.cloudnetservice.driver.registry.ServiceRegistry;
 import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import eu.cloudnetservice.wrapper.configuration.WrapperConfiguration;
@@ -154,8 +155,12 @@ public class CloudNetAdapter {
         return InjectionLayer.ext().instance(ServiceRegistry.class).firstProvider(PlayerManager.class);
     }
 
-    private WrapperConfiguration wrapperConfigurationInstance(){
+    public WrapperConfiguration wrapperConfigurationInstance(){
         return InjectionLayer.ext().instance(WrapperConfiguration.class);
+    }
+
+    public CloudServiceProvider cloudServiceProviderInstance(){
+        return InjectionLayer.ext().instance(CloudServiceProvider.class);
     }
 
     public static String getArenaUpdateChannelName(){
