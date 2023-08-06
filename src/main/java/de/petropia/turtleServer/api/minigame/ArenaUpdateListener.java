@@ -1,10 +1,11 @@
 package de.petropia.turtleServer.api.minigame;
 
-import de.dytanic.cloudnet.common.document.gson.JsonDocument;
-import de.dytanic.cloudnet.driver.event.EventListener;
-import de.dytanic.cloudnet.driver.event.events.channel.ChannelMessageReceiveEvent;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.cloudNet.CloudNetAdapter;
+import de.petropia.turtleServer.server.cloudNet.dto.ArenaDeleteDTO;
+import de.petropia.turtleServer.server.cloudNet.dto.PublishArenaUpdateDTO;
+import eu.cloudnetservice.driver.event.EventListener;
+import eu.cloudnetservice.driver.event.events.channel.ChannelMessageReceiveEvent;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -14,39 +15,30 @@ import java.util.UUID;
 public class ArenaUpdateListener {
         @EventListener
         public void onChannelMessage(ChannelMessageReceiveEvent event) {
-            if (event.isQuery()) {
+            if (event.query()) {
                 return;
             }
-            if (!event.getChannel().equals(CloudNetAdapter.getArenaUpdateChannelName())) {
+            if (!event.channel().equals(CloudNetAdapter.getArenaUpdateChannelName())) {
                 return;
             }
-            if(event.getMessage() == null){
-                return;
-            }
-            if(event.getMessage().equals(CloudNetAdapter.getArenaUpdateResendRequestMessage())){
+            if(event.message().equals(CloudNetAdapter.getArenaUpdateResendRequestMessage())){
                 Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpdateResendRequestEvent()));
                 return;
             }
-            if(event.getChannelMessage().getJson().isEmpty()){
-                TurtleServer.getInstance().getLogger().warning("Recived Empty Arena Update Message from " + event.getSender().getName());
-                return;
+            if(event.message().equals(CloudNetAdapter.getArenaDeleteMessage())){
+                ArenaDeleteDTO arenaDeleteDTO = event.channelMessage().content().readObject(ArenaDeleteDTO.class);
+                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaDeleteEvent(arenaDeleteDTO.id(), arenaDeleteDTO.server())));
             }
-            if(event.getMessage().equals(CloudNetAdapter.getArenaDeleteMessage())){
-                JsonDocument json = event.getChannelMessage().getJson();
-                String arenaID = json.getString("id");
-                String server = json.getString("server");
-                Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaDeleteEvent(arenaID, server)));
-            }
-            if(event.getMessage().equals(CloudNetAdapter.getArenaUpdateMessage())){
-                JsonDocument json = event.getChannelMessage().getJson();
-                String id = json.getString("id");
-                String game = json.getString("game");
-                GameMode mode = GameMode.valueOf(json.getString("type"));
-                int maxPlayers = json.getInt("maxPlayerCount");
-                int playerCount = json.getInt("playerCount");
-                GameState state = GameState.valueOf(json.getString("gameState"));
-                List<UUID> playerUUID = parsePlayerUUIDs(json.getString("playerUUIDs"));
-                String server = json.getString("server");
+            if(event.message().equals(CloudNetAdapter.getArenaUpdateMessage())){
+                PublishArenaUpdateDTO publishArenaUpdateDTO = event.channelMessage().content().readObject(PublishArenaUpdateDTO.class);
+                String id = publishArenaUpdateDTO.id();
+                String game = publishArenaUpdateDTO.game();
+                GameMode mode = publishArenaUpdateDTO.mode();
+                int maxPlayers = publishArenaUpdateDTO.maxPlayers();
+                int playerCount = publishArenaUpdateDTO.playerCount();
+                GameState state = publishArenaUpdateDTO.state();
+                List<UUID> playerUUID = parsePlayerUUIDs(publishArenaUpdateDTO.players());
+                String server = publishArenaUpdateDTO.server();
                 Bukkit.getScheduler().runTask(TurtleServer.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(new ArenaUpateEvent(id, game, mode, playerCount, maxPlayers, state, playerUUID, server)));
             }
         }

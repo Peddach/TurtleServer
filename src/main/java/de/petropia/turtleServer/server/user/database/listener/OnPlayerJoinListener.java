@@ -1,10 +1,10 @@
 package de.petropia.turtleServer.server.user.database.listener;
 
 import com.destroystokyo.paper.profile.ProfileProperty;
-import de.dytanic.cloudnet.ext.bridge.bukkit.event.BukkitBridgeProxyPlayerLoginSuccessEvent;
 import de.petropia.turtleServer.server.TurtleServer;
 import de.petropia.turtleServer.server.user.PetropiaPlayer;
-import net.kyori.adventure.text.Component;
+import eu.cloudnetservice.driver.event.EventListener;
+import eu.cloudnetservice.modules.bridge.event.BridgeProxyPlayerLoginEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -57,10 +57,8 @@ public class OnPlayerJoinListener implements Listener {
         player.updatePlayer().thenAccept(petropiaPlayer -> TurtleServer.getMongoDBHandler().cachePlayer(petropiaPlayer));
     }
 
-    @EventHandler
-    public void onPlayerNetworkJoin(BukkitBridgeProxyPlayerLoginSuccessEvent event){
-        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.getNetworkConnectionInfo().getUniqueId().toString()).thenAccept(petropiaPlayer -> {
-            petropiaPlayer.updateLastOnline((int) Instant.now().getEpochSecond());
-        });
+    @EventListener
+    public void onPlayerNetworkJoin(BridgeProxyPlayerLoginEvent event){
+        TurtleServer.getMongoDBHandler().getPetropiaPlayerByUUID(event.cloudPlayer().uniqueId().toString()).thenAccept(petropiaPlayer -> petropiaPlayer.updateLastOnline((int) Instant.now().getEpochSecond()));
     }
 }
