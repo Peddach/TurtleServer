@@ -89,11 +89,11 @@ public class WorldManager {
                     future.complete(false);
                     return;
                 }
-                zip.addFile(levelDat, parameters);
-                zip.addFolder(entitiesDir, parameters);
-                zip.addFolder(poiDir, parameters);
-                zip.addFolder(dataDir, parameters);
-                zip.addFolder(regionDir, parameters);
+                if(levelDat.exists()) zip.addFile(levelDat, parameters);
+                if(entitiesDir.exists()) zip.addFolder(entitiesDir, parameters);
+                if(poiDir.exists()) zip.addFolder(poiDir, parameters);
+                if(dataDir.exists()) zip.addFolder(dataDir, parameters);
+                if(regionDir.exists()) zip.addFolder(regionDir, parameters);
                 zipFile = zip.getFile();
             } catch (IOException e) {
                 e.printStackTrace();
